@@ -19,6 +19,9 @@
     <Filter Include="vmprofille\vmprofiles">
       <UniqueIdentifier>{294cffc2-a939-4d12-8f88-30cad4cf3fd7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="vmprofille\include">
+      <UniqueIdentifier>{d4906d6e-14a7-4954-999d-bba3b9b18705}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="vmprofile_test.cpp">
@@ -120,5 +123,46 @@
     <ClCompile Include="vmprofiler\src\vmutils.cpp">
       <Filter>vmprofille</Filter>
     </ClCompile>
+    <ClCompile Include="virtual_machine_stream.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="vmprofiler\include\calc_jmp.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\scn.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\transform.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\virtual_machine_stream.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmctx.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmhandlers.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vminstrs.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmlocate.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmp2.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmprofiler.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmprofiles.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="vmprofiler\include\vmutils.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

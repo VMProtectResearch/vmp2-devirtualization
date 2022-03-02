@@ -118,7 +118,8 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build\;D:\vs-code\vmprofile_test\vmprofile_test\build;D:\vs-code\vmprofile_test\vmprofile_test\xtils;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\cli-parser;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build\;D:\vs-code\vmprofile_test\vmprofile_test\build;D:\vs-code\vmprofile_test\vmprofile_test\xtils;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -144,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="virtual_machine_stream.cpp" />
     <ClCompile Include="vmprofiler\src\calc_jmp.cpp" />
     <ClCompile Include="vmprofiler\src\scn.cpp" />
     <ClCompile Include="vmprofiler\src\vmctx.cpp" />
@@ -182,6 +184,20 @@
     <ProjectReference Include="vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">
       <Project>{88a23124-5640-35a0-b890-311d7a67a7d2}</Project>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="vmprofiler\include\calc_jmp.hpp" />
+    <ClInclude Include="vmprofiler\include\scn.hpp" />
+    <ClInclude Include="vmprofiler\include\transform.hpp" />
+    <ClInclude Include="vmprofiler\include\virtual_machine_stream.hpp" />
+    <ClInclude Include="vmprofiler\include\vmctx.hpp" />
+    <ClInclude Include="vmprofiler\include\vmhandlers.hpp" />
+    <ClInclude Include="vmprofiler\include\vminstrs.hpp" />
+    <ClInclude Include="vmprofiler\include\vmlocate.hpp" />
+    <ClInclude Include="vmprofiler\include\vmp2.hpp" />
+    <ClInclude Include="vmprofiler\include\vmprofiler.hpp" />
+    <ClInclude Include="vmprofiler\include\vmprofiles.hpp" />
+    <ClInclude Include="vmprofiler\include\vmutils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

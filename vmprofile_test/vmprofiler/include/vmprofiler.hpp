@@ -8,3 +8,4 @@
 #include <vmutils.hpp>
 #include <calc_jmp.hpp>
 #include <vmlocate.hpp>
+#include <virtual_machine_stream.hpp>

@@ -255,7 +255,7 @@ namespace vm::handler
 
             *transform_instr = handler_transform->instr;
             
-            vm::util::print(reinterpret_cast<zydis_decoded_instr_t&>(*transform_instr));
+            //vm::util::print(reinterpret_cast<zydis_decoded_instr_t&>(*transform_instr));
 
             return true;
         }
