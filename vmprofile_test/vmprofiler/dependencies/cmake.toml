@@ -1,0 +1,12 @@
+[options]
+ZYDIS_BUILD_SHARED_LIB = false
+ZYDIS_BUILD_EXAMPLES = false
+ZYDIS_BUILD_TOOLS = false
+ZYDIS_FUZZ_AFL_FAST = false
+ZYDIS_LIBFUZZER = false
+
+[subdir.zydis]
+
+[target.linux-pe]
+type = "interface"
+include-directories = ["linux-pe/includes/"]
