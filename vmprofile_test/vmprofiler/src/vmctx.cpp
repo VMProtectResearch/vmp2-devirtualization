@@ -31,7 +31,7 @@ bool ctx_t::init() {
   if (!vm::calc_jmp::get(vm_entry, calc_jmp)) return false;
 
   
-  if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream))
+  if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream,key1,key2))
     return false;
 
 

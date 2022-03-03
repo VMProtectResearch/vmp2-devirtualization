@@ -43,6 +43,7 @@ int main(int argc,const char* argv[])
 
     const auto image_size = NT_HEADER(module_base)->OptionalHeader.SizeOfImage;
     const auto image_base = NT_HEADER(module_base)->OptionalHeader.ImageBase;
+
     vm::ctx_t vmctx(module_base, image_base, image_size, vm_entry_rva);
 
     if (!vmctx.init())
