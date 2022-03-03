@@ -40,6 +40,7 @@ class ctx_t {
   vmp2::exec_type_t exec_type;
   zydis_routine_t vm_entry, calc_jmp;
   uint64_t opcode_stream; //一个vmentry对应一个(或多个?)virtual machine excute stream
+  uint32_t key1, key2;  //vmentry入口的时候会push2个key,这里记录
 
   /// <summary>
   /// all the vm handlers for the given vm entry...
