@@ -42,7 +42,13 @@ int main(int argc,const char* argv[])
 
 
     const auto image_size = NT_HEADER(module_base)->OptionalHeader.SizeOfImage;
-    const auto image_base = NT_HEADER(module_base)->OptionalHeader.ImageBase;
+    const auto image_base = 0x140000000; //must 0x140000000   bugbug?
+
+    if (NT_HEADER(module_base)->FileHeader.Machine != IMAGE_FILE_MACHINE_AMD64)
+    {
+        std::printf("[!] dont support x86!\n");
+        return -1;
+    }
 
     vm::ctx_t vmctx(module_base, image_base, image_size, vm_entry_rva);
 
@@ -51,11 +57,42 @@ int main(int argc,const char* argv[])
         return -1;
     }
 
+    //mov     al, [rsi-1]
+    //lea     rsi, [rsi-1]   
+    uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1 ;
+    uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
+
+    for (;;)
+    {
+        uint8_t al = *vip;
+        uint8_t bl = static_cast<uint8_t>(rbx);
+
+        for (auto& insn : vmctx.update_opcode) {
+            if(!vm::transform::has_imm(&insn.instr)) //sub al,bl
+                al = vm::transform::apply(8, insn.instr.mnemonic, al, bl);
+            else
+            al = vm::transform::apply(8, insn.instr.mnemonic, al, insn.instr.operands[1].imm.value.u);
+        }
+
+        for (auto& insn : vmctx.update_rolling_key) {
+            bl = static_cast<uint64_t>(vm::transform::apply(8, insn.instr.mnemonic, rbx, al));
+        }
+
+        auto ptr = vmctx.vm_handlers[al];
 
 
+        printf("[opcode %x] [handler at 0x%llx %s]\n", al, ptr.address,ptr.profile->name);
 
+        if (vmctx.exec_type == vmp2::exec_type_t::forward)
+            vip = vip + 1 + ((ptr.profile->imm_size) ? 1 : 0);
+        else
+            vip = vip - 1 - ((ptr.profile->imm_size) ? 1 : 0);
+
+    }
 
     
+
+
 
 
 

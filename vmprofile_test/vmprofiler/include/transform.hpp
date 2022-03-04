@@ -204,7 +204,7 @@ namespace vm::transform
     template < class T > inline const auto _dec = []( T a, T b ) -> T { return a - 1; };
 
     template < class T >
-    inline std::map< zydis_mnemonic_t, transform_t< T > > transforms = {
+    inline std::map< zydis_mnemonic_t, transform_t< T > > transforms = { //变换只支持这几种操作
         { ZYDIS_MNEMONIC_ADD, _add< T > }, { ZYDIS_MNEMONIC_XOR, _xor< T > },   { ZYDIS_MNEMONIC_BSWAP, _bswap< T > },
         { ZYDIS_MNEMONIC_SUB, _sub< T > }, { ZYDIS_MNEMONIC_NEG, _neg< T > },   { ZYDIS_MNEMONIC_NOT, _not< T > },
         { ZYDIS_MNEMONIC_ROR, _ror< T > }, { ZYDIS_MNEMONIC_ROL, _rol< T > },   { ZYDIS_MNEMONIC_INC, _inc< T > },

@@ -20,4 +20,12 @@ namespace vm::calc_jmp
     /// <param name="calc_jmp"></param>
     /// <returns></returns>
     std::optional< vmp2::exec_type_t > get_advancement( const zydis_routine_t &calc_jmp );
+
+    //find opcode decrypt instructions in calc_jmp
+    bool get_op_decrypt(const zydis_routine_t& calc_jmp,
+                        zydis_routine_t& update_opcode,zydis_routine_t& update_rolling_key);
+
+
+
+
 } // namespace vm::calc_jmp

@@ -57,4 +57,53 @@ namespace vm::calc_jmp
         }
         return {};
     }
+
+
+
+        bool get_op_decrypt(const zydis_routine_t& calc_jmp,
+                        zydis_routine_t& update_opcode,
+                        zydis_routine_t& update_rolling_key)
+    {
+
+        for (auto insn : calc_jmp) {
+        if (((insn.instr.operands[0].reg.value == ZYDIS_REGISTER_AL) &&
+             (insn.instr.operands[0].actions & ZYDIS_OPERAND_ACTION_WRITE))) {
+            update_opcode.push_back(insn);
+        }
+
+        if ((insn.instr.operands[0].reg.value == ZYDIS_REGISTER_BL) &&
+            (insn.instr.operands[0].actions & ZYDIS_OPERAND_ACTION_WRITE))
+          update_rolling_key.push_back(insn);
+      }
+
+        if (update_opcode.empty())
+            return false;
+
+        //erase mov al,[rsi-1]
+        update_opcode.erase(update_opcode.begin());
+
+
+        //vm::util::print(update_opcode);
+
+        //printf("\n");
+
+        //vm::util::print(update_rolling_key);
+        
+        return true;
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 } // namespace vm::calc_jmp

@@ -30,13 +30,14 @@ bool ctx_t::init() {
   //获得取opcode到jmp到handler的分支指令
   if (!vm::calc_jmp::get(vm_entry, calc_jmp)) return false;
 
-  
+    if (!vm::calc_jmp::get_op_decrypt(calc_jmp, update_opcode,update_rolling_key))
+    return false;
+
   if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream,key1,key2))
     return false;
 
-
   //通过特征定位到handler table
-  if (auto vm_handler_table = vm::handler::table::get(vm_entry);
+  if (vm_handler_table = vm::handler::table::get(vm_entry);
       !vm::handler::get_all(module_base, image_base, vm_entry, vm_handler_table, //从table中提取所有的handler
                             vm_handlers))
     return false;

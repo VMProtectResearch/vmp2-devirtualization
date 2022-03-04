@@ -38,7 +38,8 @@ class ctx_t {
   /// the order in which VIP advances...
   /// </summary>
   vmp2::exec_type_t exec_type;
-  zydis_routine_t vm_entry, calc_jmp;
+  uintptr_t* vm_handler_table;
+  zydis_routine_t vm_entry, calc_jmp, update_opcode ,update_rolling_key;
   uint64_t opcode_stream; //一个vmentry对应一个(或多个?)virtual machine excute stream
   uint32_t key1, key2;  //vmentry入口的时候会push2个key,这里记录
 
