@@ -194,4 +194,25 @@ bool flatten(zydis_routine_t &routine, std::uintptr_t routine_addr,
 /// </summary>
 /// <param name="routine">reference to a flattened instruction vector...</param>
 void deobfuscate(zydis_routine_t &routine);
+
+template<typename T>
+T get_operand(uint64_t vip, T operand) {
+  T val;
+  memcpy(&val, vip, sizeof(T));
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 }  // namespace vm::util

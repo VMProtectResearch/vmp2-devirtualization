@@ -61,11 +61,10 @@ int main(int argc,const char* argv[])
     //lea     rsi, [rsi-1]   
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1 ;
     uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
-
+    uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
     for (;;)
     {
         uint8_t al = *vip;
-        uint8_t bl = static_cast<uint8_t>(rbx);
 
         for (auto& insn : vmctx.update_opcode) {
             if(!vm::transform::has_imm(&insn.instr)) //sub al,bl
@@ -78,15 +77,26 @@ int main(int argc,const char* argv[])
             bl = static_cast<uint64_t>(vm::transform::apply(8, insn.instr.mnemonic, rbx, al));
         }
 
+
+        //get opcode correspond handler
         auto ptr = vmctx.vm_handlers[al];
 
 
         printf("[opcode %x] [handler at 0x%llx %s]\n", al, ptr.address,ptr.profile->name);
 
+        vm::transform::map_t trans{};
+        vm::handler::get_operand_transforms(ptr.instrs, trans);
+
+        //apply the handle's transform to al(ax\eax\rax) and bl(bx\ebx\rbx)
+        
+        vm::util::get_operand<ptr.imm_size>
+
+
+
         if (vmctx.exec_type == vmp2::exec_type_t::forward)
-            vip = vip + 1 + ((ptr.profile->imm_size) ? 1 : 0);
+            vip = vip + 1 + ptr.imm_size / 8;
         else
-            vip = vip - 1 - ((ptr.profile->imm_size) ? 1 : 0);
+            vip = vip - 1 - ptr.imm_size / 8;
 
     }
 
