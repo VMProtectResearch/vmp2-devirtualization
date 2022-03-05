@@ -60,39 +60,149 @@ int main(int argc,const char* argv[])
     //mov     al, [rsi-1]
     //lea     rsi, [rsi-1]   
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1 ;
-    uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
-    uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
+    //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
+    //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
+    vm::util::Reg rbx(vmctx.opcode_stream);
     for (;;)
     {
-        uint8_t al = *vip;
+
+//calc_jmp
+        uint8_t op = *vip;
 
         for (auto& insn : vmctx.update_opcode) {
             if(!vm::transform::has_imm(&insn.instr)) //sub al,bl
-                al = vm::transform::apply(8, insn.instr.mnemonic, al, bl);
+                op = vm::transform::apply(8, insn.instr.mnemonic, op, rbx.r_8());
             else
-            al = vm::transform::apply(8, insn.instr.mnemonic, al, insn.instr.operands[1].imm.value.u);
+                op = vm::transform::apply(8, insn.instr.mnemonic, op, insn.instr.operands[1].imm.value.u);
         }
 
         for (auto& insn : vmctx.update_rolling_key) {
-            bl = static_cast<uint64_t>(vm::transform::apply(8, insn.instr.mnemonic, rbx, al));
+            auto r = static_cast<uint64_t>(vm::transform::apply(8, insn.instr.mnemonic, rbx.r_8(), op));
+            rbx.w_8(static_cast<uint8_t>(r));   //sub     bl, al
         }
 
 
         //get opcode correspond handler
-        auto ptr = vmctx.vm_handlers[al];
-
-
-        printf("[opcode %x] [handler at 0x%llx %s]\n", al, ptr.address,ptr.profile->name);
+        auto ptr = vmctx.vm_handlers.at(op);
+        printf("[opcode %x] [handler at 0x%llx %s]\n", op, ptr.address,ptr.profile->name);
+//cacl_jmp
 
         vm::transform::map_t trans{};
         vm::handler::get_operand_transforms(ptr.instrs, trans);
 
         //apply the handle's transform to al(ax\eax\rax) and bl(bx\ebx\rbx)
+        switch (ptr.imm_size)
+        {
+        case 8:
+        {
+            uint8_t al; //temp var
+            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &al);
+
+            for (const auto& insn : trans) {
+                if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AL)
+                {
+                    if (!vm::transform::has_imm(&insn.second))
+                        al = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, al, rbx.r_8());
+                    else
+                        al = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, al, insn.second.operands[1].imm.value.u);
+                }
+                else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_BL)
+                {
+                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_8(), al);
+                    rbx.w_8(static_cast<uint8_t>(r));
+                }
+                else
+                {
+                    //bugbug
+                }
+            }
+        }
+            break;
+        case 16:
+        {
+            uint16_t ax; //temp var
+            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &ax);
+
+            for (const auto& insn : trans) {
+                if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AX)
+                {
+                    if (!vm::transform::has_imm(&insn.second))
+                        ax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, ax, rbx.r_16());
+                    else
+                        ax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, ax, insn.second.operands[1].imm.value.u);
+                }
+                else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_BX)
+                {
+                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_16(), ax);
+                    rbx.w_16(static_cast<uint16_t>(r));
+                }
+                else
+                {
+                    //bugbug
+                }
+            }
+        }
+            break;
+        case 32:
+        {
+            uint32_t eax; //temp var
+            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &eax);
+
+            for (const auto& insn : trans) {
+                if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_EAX)
+                {
+                    if (!vm::transform::has_imm(&insn.second))
+                        eax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, eax, rbx.r_32());
+                    else
+                        eax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, eax, insn.second.operands[1].imm.value.u);
+                }
+                else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_EBX)
+                {
+                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_32(), eax);
+                    rbx.w_32(static_cast<uint32_t>(r));
+                }
+                else
+                {
+                    //bugbug
+                }
+            }
         
-        vm::util::get_operand<ptr.imm_size>
+        
+        }
+        break;
+        case 64:
+        {
+            uint64_t rax; //temp var
+            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &rax);
+
+            for (const auto& insn : trans) {
+                if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_RAX)
+                {
+                    if (!vm::transform::has_imm(&insn.second))
+                        rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rax, rbx.r_64());
+                    else
+                        rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rax, insn.second.operands[1].imm.value.u);
+                }
+                else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_RBX)
+                {
+                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_64(), rax);
+                    rbx.w_64(static_cast<uint64_t>(r));
+                }
+                else
+                {
+                    //bugbug
+                }
+            }
+
+
+        }
+        break;
+        default:break;
+        }
 
 
 
+// forward vip
         if (vmctx.exec_type == vmp2::exec_type_t::forward)
             vip = vip + 1 + ptr.imm_size / 8;
         else

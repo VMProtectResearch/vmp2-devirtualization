@@ -195,14 +195,58 @@ bool flatten(zydis_routine_t &routine, std::uintptr_t routine_addr,
 /// <param name="routine">reference to a flattened instruction vector...</param>
 void deobfuscate(zydis_routine_t &routine);
 
+/// <summary>
+/// 
+/// </summary>
+/// <typeparam name="T"></typeparam>type like uint8_t uint32_t uint16_t uint64_t
+/// <param name="vip"></param>
+/// <param name="size"></param>size in bits
+/// <param name="operand"></param>
 template<typename T>
-T get_operand(uint64_t vip, T operand) {
-  T val;
-  memcpy(&val, vip, sizeof(T));
+inline void get_operand(uint8_t* vip, uint64_t size,T* operand) {
+  memcpy_s(operand,sizeof(T), vip, size/8);
 }
 
+struct Reg 
+{
+  uint64_t r(uint8_t size) {
+    if (size == 8)
+      return r_8();
+    else if (size == 16)
+      return r_16();
+    else if (size == 32)
+      return r_32();
+    else if (size == 64)
+      return r_64();
+  }
+
+  uint8_t r_8() { return static_cast<uint8_t>(val_64); }
+  uint16_t r_16() { return static_cast<uint16_t>(val_64); }
+  uint32_t r_32() { return static_cast<uint32_t>(val_64); }
+  uint64_t r_64() { return static_cast<uint64_t>(val_64); }
+
+  void w_8(uint8_t val) {
+    val_64 &= ~0xffull;
+    val_64 |= val;
+  }
+
+  void w_16(uint16_t val) {
+    val_64 &= ~0xffffull;
+    val_64 |= val;
+  }
+
+  void w_32(uint32_t val) {
+    val_64 &= ~0xffffffffull;
+    val_64 |= val;
+  }
+
+  void w_64(uint64_t val) { val_64 = val;
+  }
 
 
+  Reg(uint64_t val_64) :val_64(val_64){}
+  uint64_t val_64;
+};
 
 
 
