@@ -87,8 +87,11 @@ int main(int argc,const char* argv[])
         printf("[vip %llx][opcode %x] [handler at 0x%llx %s]\n", vip,op, ptr.address,ptr.profile->name);
 //cacl_jmp
 
-        if (ptr.profile->mnemonic == vm::handler::JMP)
+        if (ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
         {
+
+
+
 
         }
 
