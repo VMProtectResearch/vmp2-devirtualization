@@ -1,5 +1,6 @@
 trace vm 
 
-![img](https://github.com/aobfucated/vmprofile-test/blob/master/vmprofile_test/trace%20vm%20.png)
+TODO:  
+how to trace vJcc and VMEXIT?  (in the case of static analysis)
 
 Credit : _xeroxz
