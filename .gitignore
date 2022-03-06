@@ -393,3 +393,8 @@ FodyWeavers.xsd
 /vmprofile_test/packed_demo.vmp.exe
 /vmprofile_test/packed_demo.vmp.exe.i64
 
+/vmprofile_test/packed_demo.vmp.exe.id0
+/vmprofile_test/packed_demo.vmp.exe.id1
+/vmprofile_test/packed_demo.vmp.exe.id2
+/vmprofile_test/packed_demo.vmp.exe.nam
+/vmprofile_test/packed_demo.vmp.exe.til

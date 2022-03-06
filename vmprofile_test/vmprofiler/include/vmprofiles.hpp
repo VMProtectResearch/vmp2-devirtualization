@@ -113,7 +113,11 @@ namespace vm::handler
         NANDQ,
         NANDDW,
         NANDW,
-        NANDB
+        NANDB,
+
+        CPUID
+
+   
     };
 
     /// <summary>
@@ -253,6 +257,8 @@ namespace vm::handler
         extern vm::handler::profile_t rdtsc;
         extern vm::handler::profile_t vmexit;
 
+        extern vm::handler::profile_t cpuid;
+
         /// <summary>
         /// a vector of pointers to all defined vm handler profiles...
         /// </summary>
@@ -264,6 +270,7 @@ namespace vm::handler
             &nandb,       &shlddw,     &shldq,       &shrq,       &shrdw,       &shrw,     &shrb,    &shrdq,
             &shrddw,      &readgsq,    &readq,       &readdw,     &readw,       &readb,    &mulq,    &muldw,
             &imulq,       &imuldw,     &pushvspq,    &pushvspdw,  &pushvspw,    &readcr8,  &readcr3, &writecr3,
-            &divq,        &divdw,      &idivdw,      &jmp,        &lflagsq,     &vmexit,   &call,    &rdtsc };
+            &divq,        &divdw,      &idivdw,      &jmp,        &lflagsq,     &vmexit,   &call,    &rdtsc,
+            &cpuid};
     } // namespace profile
 } // namespace vm::handler

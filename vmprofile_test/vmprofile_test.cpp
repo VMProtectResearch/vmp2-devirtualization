@@ -84,8 +84,13 @@ int main(int argc,const char* argv[])
 
         //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
-        printf("[opcode %x] [handler at 0x%llx %s]\n", op, ptr.address,ptr.profile->name);
+        printf("[vip %llx][opcode %x] [handler at 0x%llx %s]\n", vip,op, ptr.address,ptr.profile->name);
 //cacl_jmp
+
+        if (ptr.profile->mnemonic == vm::handler::JMP)
+        {
+
+        }
 
         vm::transform::map_t trans{};
         vm::handler::get_operand_transforms(ptr.instrs, trans);

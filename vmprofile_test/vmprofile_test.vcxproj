@@ -145,6 +145,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="cpuid.cpp" />
     <ClCompile Include="virtual_machine_stream.cpp" />
     <ClCompile Include="vmprofiler\src\calc_jmp.cpp" />
     <ClCompile Include="vmprofiler\src\scn.cpp" />

@@ -126,6 +126,9 @@
     <ClCompile Include="virtual_machine_stream.cpp">
       <Filter>vmprofille</Filter>
     </ClCompile>
+    <ClCompile Include="cpuid.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vmprofiler\include\calc_jmp.hpp">
