@@ -7,7 +7,8 @@ namespace vm::virtual_machine_stream
 	bool get(const zydis_routine_t& vm_entry,
 		uint64_t& opstream_addr,
 		uint32_t& key1,
-		uint32_t& key2)
+		uint32_t& key2,
+		uint64_t module_base)
 	{
 
 		uint64_t imm_value = 0;
@@ -97,7 +98,7 @@ namespace vm::virtual_machine_stream
 				insn.instr.operands[1].imm.value.u);
 		}
 
-		opstream_addr = static_cast<uint64_t>(transform_key1)+ 0x100000000;
+		opstream_addr = static_cast<uint64_t>(transform_key1)+ 0x100000000 -0x140000000 + module_base;
 		return true;
 	}
 

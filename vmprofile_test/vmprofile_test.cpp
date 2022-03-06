@@ -59,7 +59,7 @@ int main(int argc,const char* argv[])
 
     //mov     al, [rsi-1]
     //lea     rsi, [rsi-1]   
-    uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1 ;
+    uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1;
     //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
     //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
     vm::util::Reg rbx(vmctx.opcode_stream);
@@ -224,7 +224,7 @@ int main(int argc,const char* argv[])
 // forward vip
         if (vmctx.exec_type == vmp2::exec_type_t::forward)
             vip = vip + 1 + ptr.imm_size / 8;
-        else
+        else  //backward vip
             vip = vip - 1 - ptr.imm_size / 8;
 
     }

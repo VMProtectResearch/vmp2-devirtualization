@@ -33,7 +33,7 @@ bool ctx_t::init() {
     if (!vm::calc_jmp::get_op_decrypt(calc_jmp, update_opcode,update_rolling_key))
     return false;
 
-  if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream,key1,key2))
+  if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream,key1,key2,module_base))
     return false;
 
   //通过特征定位到handler table
