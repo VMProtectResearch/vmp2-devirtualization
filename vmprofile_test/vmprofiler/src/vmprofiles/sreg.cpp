@@ -36,8 +36,7 @@ vm::handler::profile_t sregq = {
                instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                instr.operands[1].reg.value == ZYDIS_REGISTER_RDX;
       }}},
-    extention_t::none,                          //probably al->rax ax->rax eax->rax 
-    [](uint64_t vStack, uint64_t vContext, uint64_t Rax) { printf("\t[RBP] -> [RDI+%llx]\n\n",Rax); }
+    extention_t::none,                       
 };
 
     vm::handler::profile_t sregdw = {

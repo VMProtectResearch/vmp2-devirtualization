@@ -167,9 +167,6 @@ namespace vm::handler::profile
                      instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
           } },
         vm::handler::extention_t::sign_extend,
-        [](uint64_t vStack, uint64_t vContext, uint64_t Rax) {
-          printf("\tpush constant %llx to stack\n\n", Rax);
-        }
     };
 
     vm::handler::profile_t lconstwsxq = {

@@ -34,7 +34,9 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RDX;
-            } } } };
+            } } },
+            extention_t::none,
+    };
 
     vm::handler::profile_t lregdw = {
         // MOV RDX, [RAX + RDI]
