@@ -2,38 +2,43 @@
 
 namespace vm::handler::profile
 {
-    vm::handler::profile_t sregq = {
-        // MOV RDX, [RBP]
-        // ADD RBP, 8
-        // MOV [RAX+RDI], RDX
-        "SREGQ",
-        SREGQ,
-        8,
-        { { // MOV RDX, [RBP]
-            []( const zydis_decoded_instr_t &instr ) -> bool {
-                return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
-                       instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
-                       instr.operands[ 0 ].reg.value == ZYDIS_REGISTER_RDX &&
-                       instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_MEMORY &&
-                       instr.operands[ 1 ].mem.base == ZYDIS_REGISTER_RBP;
-            },
-            // ADD RBP, 8
-            []( const zydis_decoded_instr_t &instr ) -> bool {
-                return instr.mnemonic == ZYDIS_MNEMONIC_ADD &&
-                       instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
-                       instr.operands[ 0 ].reg.value == ZYDIS_REGISTER_RBP &&
-                       instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_IMMEDIATE && instr.operands[ 1 ].imm.value.u == 8;
-            },
-            // MOV [RAX+RDI], RDX or MOV [RDI+RAX], RDX
-            []( const zydis_decoded_instr_t &instr ) -> bool {
-                return instr.mnemonic == ZYDIS_MNEMONIC_MOV && instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_MEMORY &&
-                       ( instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RAX ||
-                         instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RDI ) &&
-                       ( instr.operands[ 0 ].mem.index == ZYDIS_REGISTER_RDI ||
-                         instr.operands[ 0 ].mem.index == ZYDIS_REGISTER_RAX ) &&
-                       instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
-                       instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RDX;
-            } } } };
+vm::handler::profile_t sregq = {
+    // MOV RDX, [RBP]
+    // ADD RBP, 8
+    // MOV [RAX+RDI], RDX
+    "SREGQ",
+    SREGQ,
+    8,
+    {{// MOV RDX, [RBP]
+      [](const zydis_decoded_instr_t& instr) -> bool {
+        return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+               instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+               instr.operands[0].reg.value == ZYDIS_REGISTER_RDX &&
+               instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+               instr.operands[1].mem.base == ZYDIS_REGISTER_RBP;
+      },
+      // ADD RBP, 8
+      [](const zydis_decoded_instr_t& instr) -> bool {
+        return instr.mnemonic == ZYDIS_MNEMONIC_ADD &&
+               instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+               instr.operands[0].reg.value == ZYDIS_REGISTER_RBP &&
+               instr.operands[1].type == ZYDIS_OPERAND_TYPE_IMMEDIATE &&
+               instr.operands[1].imm.value.u == 8;
+      },
+      // MOV [RAX+RDI], RDX or MOV [RDI+RAX], RDX
+      [](const zydis_decoded_instr_t& instr) -> bool {
+        return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+               instr.operands[0].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+               (instr.operands[0].mem.base == ZYDIS_REGISTER_RAX ||
+                instr.operands[0].mem.base == ZYDIS_REGISTER_RDI) &&
+               (instr.operands[0].mem.index == ZYDIS_REGISTER_RDI ||
+                instr.operands[0].mem.index == ZYDIS_REGISTER_RAX) &&
+               instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+               instr.operands[1].reg.value == ZYDIS_REGISTER_RDX;
+      }}},
+    extention_t::none,                          //probably al->rax ax->rax eax->rax 
+    [](uint64_t vStack, uint64_t vContext, uint64_t Rax) { printf("\t[RBP] -> [RDI+%llx]\n\n",Rax); }
+};
 
     vm::handler::profile_t sregdw = {
         // MOV EDX, [RBP]
@@ -136,4 +141,5 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_DL;
             } } } };
-} // namespace vm::handler::profile
+
+    } // namespace vm::handler::profile

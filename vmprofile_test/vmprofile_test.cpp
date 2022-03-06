@@ -82,7 +82,7 @@ int main(int argc,const char* argv[])
         }
 
 
-        //get opcode correspond handler
+        //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
         printf("[opcode %x] [handler at 0x%llx %s]\n", op, ptr.address,ptr.profile->name);
 //cacl_jmp
@@ -116,6 +116,9 @@ int main(int argc,const char* argv[])
                     //bugbug
                 }
             }
+
+            if (ptr.profile->emulator)
+                ptr.profile->emulator(0, 0, al);
         }
             break;
         case 16:
@@ -141,6 +144,10 @@ int main(int argc,const char* argv[])
                     //bugbug
                 }
             }
+
+
+            if (ptr.profile->emulator)
+                ptr.profile->emulator(0, 0, ax);
         }
             break;
         case 32:
@@ -167,6 +174,9 @@ int main(int argc,const char* argv[])
                 }
             }
         
+
+            if (ptr.profile->emulator)
+                ptr.profile->emulator(0, 0, eax);
         
         }
         break;
@@ -194,7 +204,8 @@ int main(int argc,const char* argv[])
                 }
             }
 
-
+            if (ptr.profile->emulator)
+                ptr.profile->emulator(0, 0, rax);
         }
         break;
         default:break;

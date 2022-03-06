@@ -145,7 +145,7 @@ namespace vm::handler::profile
         vm::handler::extention_t::sign_extend };
 
     vm::handler::profile_t lconstdwsxq = {
-        // CDQE
+        // CDQE  0x8xxxxxxx -> 0xffffffff8xxxxxxx
         // SUB RBP, 8
         // MOV [RBP], RAX
         "LCONSTDWSXQ",
@@ -166,7 +166,11 @@ namespace vm::handler::profile
                      instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                      instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
           } },
-        vm::handler::extention_t::sign_extend };
+        vm::handler::extention_t::sign_extend,
+        [](uint64_t vStack, uint64_t vContext, uint64_t Rax) {
+          printf("\tpush constant %llx to stack\n\n", Rax);
+        }
+    };
 
     vm::handler::profile_t lconstwsxq = {
         // CWDE

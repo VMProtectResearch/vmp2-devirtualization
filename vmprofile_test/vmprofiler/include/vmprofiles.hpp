@@ -160,6 +160,8 @@ namespace vm::handler
         /// how sign extention of operands are handled...
         /// </summary>
         extention_t extention;
+
+        std::function<void(uint64_t vStack, uint64_t vContext, uint64_t Rax)> emulator;
     };
 
     /// <summary>
