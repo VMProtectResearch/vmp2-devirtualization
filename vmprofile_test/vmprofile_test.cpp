@@ -84,16 +84,10 @@ int main(int argc,const char* argv[])
 
         //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
-        printf("[vip %llx][opcode %x] [handler at 0x%llx %s]\n", vip,op, ptr.address,ptr.profile->name);
+        printf("[vip %llx][opcode %x] [handler at 0x%llx %s]\n", vip,op, ptr.address,ptr.profile ? ptr.profile->name : "UNKNOW");
 //cacl_jmp
 
-        if (ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
-        {
 
-
-
-
-        }
 
         vm::transform::map_t trans{};
         vm::handler::get_operand_transforms(ptr.instrs, trans);
@@ -125,8 +119,6 @@ int main(int argc,const char* argv[])
                 }
             }
 
-            if (ptr.profile->emulator)
-                ptr.profile->emulator(0, 0, al);
         }
             break;
         case 16:
@@ -153,9 +145,6 @@ int main(int argc,const char* argv[])
                 }
             }
 
-
-            if (ptr.profile->emulator)
-                ptr.profile->emulator(0, 0, ax);
         }
             break;
         case 32:
@@ -182,9 +171,6 @@ int main(int argc,const char* argv[])
                 }
             }
         
-
-            if (ptr.profile->emulator)
-                ptr.profile->emulator(0, 0, eax);
         
         }
         break;
@@ -212,20 +198,29 @@ int main(int argc,const char* argv[])
                 }
             }
 
-            if (ptr.profile->emulator)
-                ptr.profile->emulator(0, 0, rax);
         }
         break;
         default:break;
         }
 
 
-
+        if (ptr.profile && ptr.profile->mnemonic != vm::handler::JMP) { //vJcc(Change RSI Register)
 // forward vip
-        if (vmctx.exec_type == vmp2::exec_type_t::forward)
-            vip = vip + 1 + ptr.imm_size / 8;
-        else  //backward vip
-            vip = vip - 1 - ptr.imm_size / 8;
+            if (vmctx.exec_type == vmp2::exec_type_t::forward)
+                vip = vip + 1 + ptr.imm_size / 8;
+            else  //backward vip
+                vip = vip - 1 - ptr.imm_size / 8;
+        }
+        else if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
+        {
+            vip = (uint8_t*)0x14000A4DC;
+            rbx = (uint64_t)vip + 1;         //mov     rbx, rsi   change rolling key again
+        }
+        else if (ptr.profile && ptr.profile->mnemonic == vm::handler::VMEXIT)
+        {
+            //Re-entry has the potential to change vip(RSI)
+        }
+
 
     }
 
