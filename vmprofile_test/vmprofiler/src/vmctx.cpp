@@ -8,8 +8,18 @@ ctx_t::ctx_t(std::uintptr_t module_base, std::uintptr_t image_base,
       image_size(image_size),
       vm_entry_rva(vm_entry_rva) {}
 
-bool ctx_t::init() {
-  vm::util::init();  
+bool ctx_t::init(bool first) {
+
+  if (first)
+    vm::util::init();  
+  else {
+    //clear old data
+    vm_handlers.clear();
+    vm_entry.clear();
+    calc_jmp.clear();
+    update_opcode.clear();
+    update_rolling_key.clear();
+  }
   
   //
   //解决分支的问题
@@ -17,9 +27,9 @@ bool ctx_t::init() {
   if (!vm::util::flatten(vm_entry, vm_entry_rva + module_base)) return false;
 
   //output flatten vm_entry
-
-  //for (auto insn : vm_entry) {
-    //vm::util::print(vm_entry);
+  
+  //if (!first) {
+      //vm::util::print(vm_entry);
   //}
 
   //

@@ -9,9 +9,8 @@
 #include <xtils.hpp>
 #include <cli-parser.hpp>
 
-
-
 using namespace std;
+
 
 int main(int argc,const char* argv[])
 {
@@ -52,13 +51,14 @@ int main(int argc,const char* argv[])
 
     vm::ctx_t vmctx(module_base, image_base, image_size, vm_entry_rva);
 
-    if (!vmctx.init())
+    if (!vmctx.init(true))
     {
         return -1;
     }
 
+$start:
     //mov     al, [rsi-1]
-    //lea     rsi, [rsi-1]   
+    //lea     rsi, [rsi-1]
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1;
     //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
     //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
@@ -91,6 +91,11 @@ int main(int argc,const char* argv[])
 
         vm::transform::map_t trans{};
         vm::handler::get_operand_transforms(ptr.instrs, trans);
+        for (auto it = trans.begin(); it != trans.end(); it++) //erase the instrution that is invaild
+        {
+            if (it->second.mnemonic == ZYDIS_MNEMONIC_INVALID)
+                it = trans.erase(it);
+        }
 
         //apply the handle's transform to al(ax\eax\rax) and bl(bx\ebx\rbx)
         switch (ptr.imm_size)
@@ -103,9 +108,9 @@ int main(int argc,const char* argv[])
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AL)
                 {
-                    if (!vm::transform::has_imm(&insn.second))
+                    if (!vm::transform::has_imm(&insn.second)) //al bl
                         al = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, al, rbx.r_8());
-                    else
+                    else//al imm
                         al = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, al, insn.second.operands[1].imm.value.u);
                 }
                 else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_BL)
@@ -115,7 +120,7 @@ int main(int argc,const char* argv[])
                 }
                 else
                 {
-                    //bugbug
+                    DebugBreak();
                 }
             }
 
@@ -129,9 +134,9 @@ int main(int argc,const char* argv[])
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AX)
                 {
-                    if (!vm::transform::has_imm(&insn.second))
+                    if (!vm::transform::has_imm(&insn.second))//ax bx
                         ax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, ax, rbx.r_16());
-                    else
+                    else//ax imm
                         ax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, ax, insn.second.operands[1].imm.value.u);
                 }
                 else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_BX)
@@ -139,10 +144,12 @@ int main(int argc,const char* argv[])
                     auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_16(), ax);
                     rbx.w_16(static_cast<uint16_t>(r));
                 }
-                else
+                else if ((insn.second.operands[0].reg.value == ZYDIS_REGISTER_AL && insn.second.operands[1].reg.value == ZYDIS_REGISTER_AH) || (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AH && insn.second.operands[1].reg.value == ZYDIS_REGISTER_AL))//xchg al,ah  xchg ah,al
                 {
-                    //bugbug
+                    ax = vm::transform::apply(16, insn.second.mnemonic, ax, 0); //
                 }
+                else
+                    DebugBreak();
             }
 
         }
@@ -167,7 +174,7 @@ int main(int argc,const char* argv[])
                 }
                 else
                 {
-                    //bugbug
+                    DebugBreak();
                 }
             }
         
@@ -194,44 +201,48 @@ int main(int argc,const char* argv[])
                 }
                 else
                 {
-                    //bugbug
+                    DebugBreak();
                 }
             }
 
         }
         break;
         default:break;
+        }//switch end
+
+        if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
+        {
+            printf(">> find vJcc,need new rsi : ");
+            uint64_t rsi;
+            cin >>  hex >> rsi;
+            vip = (uint8_t*)rsi;
+            rbx = (uint64_t)vip + 1;         //mov     rbx, rsi   change rolling key again
+
+            if (!vip || cin.fail())
+                return 0;
         }
+        else if (ptr.profile && ptr.profile->mnemonic == vm::handler::VMEXIT)
+        {
+            printf(">> find vm-exit,need new vm-entry(rva) : ");
 
+            uint64_t new_rva;
+            cin >> hex >> new_rva;
 
-        if (ptr.profile && ptr.profile->mnemonic != vm::handler::JMP) { //vJcc(Change RSI Register)
+            //Re-entry has the potential to change vip(RSI)
+            if (!new_rva || cin.fail())
+                return 0;
+
+            vmctx.update(new_rva);
+            goto $start;   //reparse
+        }
+        else { 
 // forward vip
             if (vmctx.exec_type == vmp2::exec_type_t::forward)
                 vip = vip + 1 + ptr.imm_size / 8;
             else  //backward vip
                 vip = vip - 1 - ptr.imm_size / 8;
         }
-        else if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
-        {
-            vip = (uint8_t*)0x14000A4DC;
-            rbx = (uint64_t)vip + 1;         //mov     rbx, rsi   change rolling key again
-        }
-        else if (ptr.profile && ptr.profile->mnemonic == vm::handler::VMEXIT)
-        {
-            //Re-entry has the potential to change vip(RSI)
-        }
-
-
     }
-
-    
-
-
-
-
-
-
-
     return 0;
 }
 

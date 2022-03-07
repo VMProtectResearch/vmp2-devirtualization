@@ -13,7 +13,7 @@ namespace vm::virtual_machine_stream
 
 		uint64_t imm_value = 0;
 		zydis_routine_t transform_esi;
-		
+
 		auto result = std::find_if(vm_entry.cbegin(), vm_entry.cend(), [](const zydis_instr_t& instr_data) {
 
 			return ((instr_data.instr.mnemonic == ZYDIS_MNEMONIC_PUSH) &&(instr_data.instr.operands[0].type == ZYDIS_OPERAND_TYPE_IMMEDIATE)) ;

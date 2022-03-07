@@ -28,11 +28,17 @@ class ctx_t {
 
   /// <summary>
   /// init all per-vm entry data such as vm_entry, calc_jmp, and vm handlers...
+  /// </param>param 'first' to indicate something no need to init
   /// </summary>
   /// <returns>returns true if no errors...</returns>
-  bool init();
+  bool init(bool first); 
 
-  const std::uintptr_t module_base, image_base, vm_entry_rva, image_size;
+  bool update(std::uintptr_t new_rva) {
+    this->vm_entry_rva = new_rva;
+    return init(false);
+  }
+
+  std::uintptr_t module_base, image_base, image_size, vm_entry_rva;
 
   /// <summary>
   /// the order in which VIP advances...

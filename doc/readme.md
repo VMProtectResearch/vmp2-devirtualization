@@ -1,0 +1,1 @@
+I'm not sure if I can use unicorn to get a virtual jcc destination(new rsi), but from my results(1.png and 2.png) it doesn't seem to work
