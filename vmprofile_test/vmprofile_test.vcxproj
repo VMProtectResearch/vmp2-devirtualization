@@ -145,16 +145,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="cpuid.cpp" />
-    <ClCompile Include="virtual_machine_stream.cpp" />
     <ClCompile Include="vmprofiler\src\calc_jmp.cpp" />
     <ClCompile Include="vmprofiler\src\scn.cpp" />
+    <ClCompile Include="vmprofiler\src\virtual_machine_stream.cpp" />
     <ClCompile Include="vmprofiler\src\vmctx.cpp" />
     <ClCompile Include="vmprofiler\src\vmhandler.cpp" />
     <ClCompile Include="vmprofiler\src\vminstrs.cpp" />
     <ClCompile Include="vmprofiler\src\vmlocate.cpp" />
     <ClCompile Include="vmprofiler\src\vmprofiles\add.cpp" />
     <ClCompile Include="vmprofiler\src\vmprofiles\call.cpp" />
+    <ClCompile Include="vmprofiler\src\vmprofiles\cpuid.cpp" />
     <ClCompile Include="vmprofiler\src\vmprofiles\div.cpp" />
     <ClCompile Include="vmprofiler\src\vmprofiles\idiv.cpp" />
     <ClCompile Include="vmprofiler\src\vmprofiles\imul.cpp" />

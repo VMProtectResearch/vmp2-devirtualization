@@ -123,11 +123,11 @@
     <ClCompile Include="vmprofiler\src\vmutils.cpp">
       <Filter>vmprofille</Filter>
     </ClCompile>
-    <ClCompile Include="virtual_machine_stream.cpp">
-      <Filter>vmprofille</Filter>
-    </ClCompile>
-    <ClCompile Include="cpuid.cpp">
+    <ClCompile Include="vmprofiler\src\vmprofiles\cpuid.cpp">
       <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="vmprofiler\src\virtual_machine_stream.cpp">
+      <Filter>vmprofille</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
