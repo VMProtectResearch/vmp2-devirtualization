@@ -165,7 +165,7 @@ namespace vm::handler
         /// </summary>
         extention_t extention;
 
-        //std::function<void(uint64_t vStack, uint64_t vContext, uint64_t Rax)> emulator;
+        std::function<void(uint64_t Rax)> rax_info;
 
 
     };

@@ -63,6 +63,7 @@ $start:
     //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
     //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
     vm::util::Reg rbx(vmctx.opcode_stream);
+    uint64_t _rax; //for handlers to output info
     for (;;)
     {
 
@@ -84,7 +85,6 @@ $start:
 
         //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
-        printf("[vip %llx][0x%llx %s]\n", vip, ptr.address,ptr.profile ? ptr.profile->name : "UNKNOW");
 //cacl_jmp
 
 
@@ -124,6 +124,8 @@ $start:
                 }
             }
 
+
+            _rax = (uint64_t)al;
         }
             break;
         case 16:
@@ -152,6 +154,7 @@ $start:
                     DebugBreak();
             }
 
+            _rax = (uint64_t)ax;
         }
             break;
         case 32:
@@ -178,7 +181,7 @@ $start:
                 }
             }
         
-        
+            _rax = (uint64_t)eax;
         }
         break;
         case 64:
@@ -205,11 +208,17 @@ $start:
                 }
             }
 
+            _rax = (uint64_t)rax;
         }
         break;
         default:break;
         }//switch end
 
+        printf("[vip %llx][0x%llx %s]\n", vip, ptr.address, ptr.profile ? ptr.profile->name : "UNKNOW");
+        if (ptr.profile->rax_info)
+        {
+            ptr.profile->rax_info(_rax);
+        }
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
         {
             printf(">> find vJcc,need new rsi : ");

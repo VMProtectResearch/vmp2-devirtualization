@@ -23,7 +23,9 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
-            } } } };
+            } } },vm::handler::extention_t::none,
+    [](uint64_t rax) { printf("[*]\t\t\t\t\t\tconst value -> %llx\n", rax); }
+    };
 
     vm::handler::profile_t lconstdw = {
         // SUB RBP, 4
