@@ -84,7 +84,7 @@ $start:
 
         //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
-        printf("[vip %llx][opcode %x] [handler at 0x%llx %s]\n", vip,op, ptr.address,ptr.profile ? ptr.profile->name : "UNKNOW");
+        printf("[vip %llx][0x%llx %s]\n", vip, ptr.address,ptr.profile ? ptr.profile->name : "UNKNOW");
 //cacl_jmp
 
 
