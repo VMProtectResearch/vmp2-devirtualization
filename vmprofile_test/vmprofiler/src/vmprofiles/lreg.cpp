@@ -36,6 +36,7 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RDX;
             } } },
             extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); }
     };
 
     vm::handler::profile_t lregdw = {
@@ -70,5 +71,7 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EDX;
-            } } } };
-} // namespace vm::handler::profile
+            } } } ,
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); }};
+    } // namespace vm::handler::profile

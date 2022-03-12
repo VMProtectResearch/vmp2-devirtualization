@@ -36,7 +36,9 @@ vm::handler::profile_t sregq = {
                instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                instr.operands[1].reg.value == ZYDIS_REGISTER_RDX;
       }}},
-    extention_t::none,                       
+    extention_t::none,   
+    [](uint64_t rax) { printf("0x%llx", rax); },
+          
 };
 
     vm::handler::profile_t sregdw = {
@@ -71,7 +73,9 @@ vm::handler::profile_t sregq = {
                          instr.operands[ 0 ].mem.index == ZYDIS_REGISTER_RDI ) &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EDX;
-            } } } };
+            } } } ,
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); }};
 
     vm::handler::profile_t sregw = {
         // MOV DX, [RBP]
@@ -105,7 +109,9 @@ vm::handler::profile_t sregq = {
                          instr.operands[ 0 ].mem.index == ZYDIS_REGISTER_RAX ) &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_DX;
-            } } } };
+            } } },
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); }};
 
     vm::handler::profile_t sregb = {
         // MOV DX, [RBP]
@@ -139,6 +145,8 @@ vm::handler::profile_t sregq = {
                          instr.operands[ 0 ].mem.index == ZYDIS_REGISTER_RAX ) &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_DL;
-            } } } };
+            } } },
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); }};
 
     } // namespace vm::handler::profile

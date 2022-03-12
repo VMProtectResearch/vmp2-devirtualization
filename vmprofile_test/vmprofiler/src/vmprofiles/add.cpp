@@ -1,8 +1,3 @@
-//
-//依赖于vmp临时计算寄存器必须用ax系列
-//
-
-
 #include <vmprofiler.hpp>
 
 namespace vm::handler::profile

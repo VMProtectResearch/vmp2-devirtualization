@@ -137,6 +137,7 @@
       <LanguageStandard>stdcpplatest</LanguageStandard>
       <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\cli-parser;D:\vs-code\vmprofile_test\vmprofile_test\build;D:\vs-code\vmprofile_test\vmprofile_test\xtils;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
+      <Optimization>Disabled</Optimization>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>

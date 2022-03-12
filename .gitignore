@@ -387,5 +387,6 @@ FodyWeavers.xsd
 .idea/
 *.sln.iml
 
-/vmprofile_test/test-bin/packed_demo.exe.i64
 *.i64
+*.sys
+*.exe

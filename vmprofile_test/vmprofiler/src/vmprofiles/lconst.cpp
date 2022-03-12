@@ -23,8 +23,9 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
-            } } },vm::handler::extention_t::none,
-    [](uint64_t rax) { printf("[*]\t\t\t\t\t\tconst value -> %llx\n", rax); }
+      }}},
+    vm::handler::extention_t::none, 
+    [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstdw = {
@@ -47,7 +48,9 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
-            } } } };
+            } } } ,vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstw = {
         // SUB RBP, 2
@@ -69,7 +72,10 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_AX;
-            } } } };
+            } } } ,
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstbzxw = {
         // MOV AL, [RSI]
@@ -92,7 +98,10 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_AX;
-            } } } };
+            } } },
+            vm::handler::extention_t::none,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstbsxdw = {
         // CWDE
@@ -118,7 +127,9 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
             } } },
-        vm::handler::extention_t::sign_extend };
+        vm::handler::extention_t::sign_extend ,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstbsxq = {
         // CDQE
@@ -144,7 +155,9 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
             } } },
-        vm::handler::extention_t::sign_extend };
+        vm::handler::extention_t::sign_extend,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstdwsxq = {
         // CDQE  0x8xxxxxxx -> 0xffffffff8xxxxxxx
@@ -169,6 +182,7 @@ namespace vm::handler::profile
                      instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
           } },
         vm::handler::extention_t::sign_extend,
+        [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstwsxq = {
@@ -198,7 +212,9 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
             } } },
-        vm::handler::extention_t::sign_extend };
+        vm::handler::extention_t::sign_extend ,
+            [](uint64_t rax) { printf("0x%llx", rax); },
+    };
 
     vm::handler::profile_t lconstwsxdw = {
         // CWDE
@@ -224,5 +240,8 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
             } } },
-        vm::handler::extention_t::sign_extend };
-} // namespace vm::handler::profile
+        vm::handler::extention_t::sign_extend ,
+            [](uint64_t rax) { printf("0x%llx", rax);
+            },
+    };
+    } // namespace vm::handler::profile
