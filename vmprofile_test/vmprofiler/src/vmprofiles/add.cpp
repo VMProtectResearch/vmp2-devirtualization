@@ -2,7 +2,7 @@
 
 namespace vm::handler::profile
 {
-    vm::handler::profile_t addq = {
+    vm::handler::profile_t addq = {  //一般来说后面都会跟一个sregq将栈顶rflags存储到ctx里
         // MOV RAX, [RBP]
         // ADD [RBP+8], RAX
         // PUSHFQ

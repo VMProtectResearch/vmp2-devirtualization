@@ -68,7 +68,7 @@ namespace vm::handler::profile
     vm::handler::profile_t nanddw = {
         // NOT QWORD PTR [RBP]
         // MOV EAX, [RBP]
-        // SUB RBP, 0x4
+        // SUB RBP, 0x4 
         // AND [RBP+0x8], EAX
         // PUSHFQ
         // POP [RBP]

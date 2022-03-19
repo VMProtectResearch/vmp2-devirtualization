@@ -225,6 +225,7 @@ $start:
 
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
         {
+            //we need new rsi
             printf(">> find vJcc,need new rsi : ");
             uint64_t rsi;
             cin >>  hex >> rsi;
@@ -236,6 +237,7 @@ $start:
         }
         else if (ptr.profile && ptr.profile->mnemonic == vm::handler::VMEXIT)
         {
+            
             printf(">> find vm-exit,need new vm-entry(rva) : ");
 
             uint64_t new_rva;

@@ -2,7 +2,7 @@
 
 namespace vm::handler::profile
 {
-    vm::handler::profile_t lregq = {
+    vm::handler::profile_t lregq = { //sp = sp-8
         // MOV RDX, [RAX+RDI]
         // SUB RBP, 8
         // MOV [RBP], RDX

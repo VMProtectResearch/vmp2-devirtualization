@@ -21,10 +21,9 @@
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>
-    <ProjectGuid>{2f864e1b-8086-4282-892f-09e9bfc2faf4}</ProjectGuid>
-    <RootNamespace>vmprofiletest</RootNamespace>
+    <ProjectGuid>{2c9890e4-8550-4e7c-90c6-287752601b44}</ProjectGuid>
+    <RootNamespace>dynimictracer</RootNamespace>
     <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
-    <ProjectName>devirt</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -115,15 +114,16 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\vs-code\z3\src\api\c++;D:\vs-code\z3\src\api;D:\vs-code\Triton\build\src\libtriton\includes;E:\boost_1_78_0\boost_1_78_0;D:\vs-code\vmprofile_test\cmdline-parser;D:\vs-code\Triton\src\libtriton\includes;D:\vs-code\vmprofile_test\dynimic_tracer\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\cli-parser;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build\;D:\vs-code\vmprofile_test\vmprofile_test\build;D:\vs-code\vmprofile_test\vmprofile_test\xtils;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>triton-x64D.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -132,74 +132,74 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;D:\vs-code\vmprofile_test\cmdline-parser;D:\vs-code\z3\src\api\c++;D:\vs-code\z3\src\api;D:\vs-code\Triton\build\src\libtriton\includes;E:\boost_1_78_0\boost_1_78_0;D:\vs-code\Triton\src\libtriton\includes;D:\vs-code\vmprofile_test\dynimic_tracer\dependencies\linux-pe\includes;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <LanguageStandard>stdcpplatest</LanguageStandard>
-      <AdditionalIncludeDirectories>D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\build;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\include;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;D:\vs-code\vmprofile_test\vmprofile_test\cli-parser;D:\vs-code\vmprofile_test\vmprofile_test\build;D:\vs-code\vmprofile_test\vmprofile_test\xtils;D:\vs-code\vmprofile_test\vmprofile_test\vmprofiler\dependencies\linux-pe\includes;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <MultiProcessorCompilation>true</MultiProcessorCompilation>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>triton-x64R.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="vmprofiler\src\calc_jmp.cpp" />
-    <ClCompile Include="vmprofiler\src\scn.cpp" />
-    <ClCompile Include="vmprofiler\src\virtual_machine_stream.cpp" />
-    <ClCompile Include="vmprofiler\src\vmctx.cpp" />
-    <ClCompile Include="vmprofiler\src\vmhandler.cpp" />
-    <ClCompile Include="vmprofiler\src\vminstrs.cpp" />
-    <ClCompile Include="vmprofiler\src\vmlocate.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\add.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\call.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\cpuid.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\div.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\idiv.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\imul.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\jmp.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\lconst.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\lflags.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\lreg.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\mul.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\nand.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\popvsp.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\pushvsp.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\rdtsc.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\read.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\readcr3.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\readcr8.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\shl.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\shld.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\shr.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\shrd.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\sreg.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\vmexit.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\write.cpp" />
-    <ClCompile Include="vmprofiler\src\vmprofiles\writecr3.cpp" />
-    <ClCompile Include="vmprofiler\src\vmutils.cpp" />
-    <ClCompile Include="vmprofile_test.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\calc_jmp.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\scn.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\virtual_machine_stream.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmctx.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmhandler.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vminstrs.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmlocate.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\add.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\call.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\cpuid.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\div.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\idiv.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\imul.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\jmp.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lconst.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lflags.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lreg.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\mul.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\nand.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\popvsp.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\pushvsp.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\rdtsc.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\read.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\readcr3.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\readcr8.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shl.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shld.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shr.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shrd.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\sreg.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\vmexit.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\write.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\writecr3.cpp" />
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmutils.cpp" />
+    <ClCompile Include="dynimic_tracer.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\calc_jmp.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\scn.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\transform.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\virtual_machine_stream.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmctx.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmhandlers.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vminstrs.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmlocate.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmp2.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmprofiler.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmprofiles.hpp" />
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmutils.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\vmprofile_test\vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">
       <Project>{88a23124-5640-35a0-b890-311d7a67a7d2}</Project>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="vmprofiler\include\calc_jmp.hpp" />
-    <ClInclude Include="vmprofiler\include\scn.hpp" />
-    <ClInclude Include="vmprofiler\include\transform.hpp" />
-    <ClInclude Include="vmprofiler\include\virtual_machine_stream.hpp" />
-    <ClInclude Include="vmprofiler\include\vmctx.hpp" />
-    <ClInclude Include="vmprofiler\include\vmhandlers.hpp" />
-    <ClInclude Include="vmprofiler\include\vminstrs.hpp" />
-    <ClInclude Include="vmprofiler\include\vmlocate.hpp" />
-    <ClInclude Include="vmprofiler\include\vmp2.hpp" />
-    <ClInclude Include="vmprofiler\include\vmprofiler.hpp" />
-    <ClInclude Include="vmprofiler\include\vmprofiles.hpp" />
-    <ClInclude Include="vmprofiler\include\vmutils.hpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

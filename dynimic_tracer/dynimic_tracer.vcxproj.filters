@@ -1,0 +1,171 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="源文件">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="头文件">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="资源文件">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="vmprofille">
+      <UniqueIdentifier>{1b30a703-fa92-47df-82af-b15670ed4edb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vmprofille\vmprofiles">
+      <UniqueIdentifier>{04ad3f1c-5b5d-4fca-94bb-db0e27a948db}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="vmprofille\include">
+      <UniqueIdentifier>{3f898025-1e55-43d9-8a13-2b6dd42ec8fb}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="dynimic_tracer.cpp">
+      <Filter>源文件</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\calc_jmp.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\scn.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\virtual_machine_stream.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmctx.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmhandler.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vminstrs.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmlocate.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmutils.cpp">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\add.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\call.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\cpuid.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\div.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\idiv.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\imul.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\jmp.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lconst.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lflags.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\lreg.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\mul.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\nand.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\popvsp.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\pushvsp.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\rdtsc.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\read.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\readcr3.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\readcr8.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shl.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shld.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shr.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\shrd.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\sreg.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\vmexit.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\write.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+    <ClCompile Include="..\vmprofile_test\vmprofiler\src\vmprofiles\writecr3.cpp">
+      <Filter>vmprofille\vmprofiles</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\calc_jmp.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\scn.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\transform.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\virtual_machine_stream.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmctx.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmhandlers.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vminstrs.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmlocate.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmp2.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmprofiler.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmprofiles.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="..\vmprofile_test\vmprofiler\include\vmutils.hpp">
+      <Filter>vmprofille\include</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
