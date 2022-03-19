@@ -1,0 +1,6 @@
+[submodule "cmdline-parser"]
+	path = cmdline-parser
+	url = https://github.com/helloobaby/cmdline-parser.git
+[submodule "dynimic_tracer/dependencies/linux-pe"]
+	path = dynimic_tracer/dependencies/linux-pe
+	url = https://github.com/can1357/linux-pe.git
