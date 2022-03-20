@@ -4,3 +4,6 @@
 [submodule "dynimic_tracer/dependencies/linux-pe"]
 	path = dynimic_tracer/dependencies/linux-pe
 	url = https://github.com/can1357/linux-pe.git
+[submodule "lifters"]
+	path = lifters
+	url = https://github.com/aobfucated/lifters.git
