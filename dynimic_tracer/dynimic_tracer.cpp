@@ -1,5 +1,7 @@
 ﻿#include <iostream>
 
+#include <lifters.hpp>  //put llvm headers ahead triton
+
 #include <triton/api.hpp>
 #include <triton/ast.hpp>
 #include <triton/x86Specifications.hpp>
@@ -7,6 +9,14 @@
 #include <windows.h>
 #include <linuxpe>
 #include <vmprofiler.hpp>
+
+
+//for x86 complie
+#include "llvm/Support/Host.h" 
+#include "llvm/MC/TargetRegistry.h" 
+#include "llvm/Target/TargetOptions.h"
+#include "llvm/Target/TargetMachine.h"
+#include "llvm/Object/ObjectFile.h"
 
 #pragma comment(linker, "/STACK:36777216")
 
@@ -38,6 +48,12 @@ int main(int argc,char* argv[])
 
     debug("[-]ideally image base %p,current image base%p size:%x\n", image->get_nt_headers()->optional_header.image_base, module_base, image->get_nt_headers()->optional_header.size_image);
 
+    //init llvm
+    llvm::LLVMContext context;
+    llvm::IRBuilder<> builder(context);
+
+    std::unique_ptr<llvm::Module> llvm_module(new llvm::Module("vmp2", context));
+
     triton::API _triton;
     _triton.setArchitecture(triton::arch::ARCH_X86_64);
 
@@ -64,7 +80,7 @@ int main(int argc,char* argv[])
     std::vector<uint8_t> v_im_data((uint8_t*)(module_base), (uint8_t*)(module_base+ image->get_nt_headers()->optional_header.size_image));
     _triton.setConcreteMemoryAreaValue((uint64_t)module_base, v_im_data);
 
-
+    
     //初始化堆栈
     //_triton.setConcreteRegisterValue(_triton.getRegister("rsp"), 0x1000);
 
@@ -84,18 +100,8 @@ int main(int argc,char* argv[])
         if (pc == vmexit_iter->address)
         {
             debug("[-]emit the vm-exit\n");
-            
-
-
-            char c;
-            while ((c = getchar()))
-            {
-                if (c == 'q')
-                    return -1;
-                else if (c == 'g')
-                    break;
-            }
-
+            getchar();
+            return -1;
         }
         else //匹配其他handler
         {
