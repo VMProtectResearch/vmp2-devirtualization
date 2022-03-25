@@ -22,6 +22,8 @@
 
 #define debug printf
 
+std::unordered_multimap<uint64_t, vm::handler::handler_t> map_handlers;
+
 int main(int argc,char* argv[])
 {
     std::string bin_path = cmd::parse(argc, argv, "-bin");
@@ -45,6 +47,10 @@ int main(int argc,char* argv[])
         debug("[-]must give a vm-entry rva(make sure the 'push -> call 'format)\n");
         return -1;
     }
+    
+    std::transform(vmctx.vm_handlers.begin(), vmctx.vm_handlers.end(), std::inserter(map_handlers,map_handlers.end()), [](vm::handler::handler_t &a) {
+        return std::make_pair((uint64_t)a.address, a);
+        });
 
     debug("[-]ideally image base %p,current image base%p size:%x\n", image->get_nt_headers()->optional_header.image_base, module_base, image->get_nt_headers()->optional_header.size_image);
 
@@ -57,18 +63,25 @@ int main(int argc,char* argv[])
     triton::API _triton;
     _triton.setArchitecture(triton::arch::ARCH_X86_64);
 
+    
+    //auto vmexit_iter = std::find_if(vmctx.vm_handlers.begin(), vmctx.vm_handlers.end(), [](vm::handler::handler_t h) {
+    //    if (!strcmp(h.profile->name, "VMEXIT"))
+    //        return true;
+    //    else
+    //        return false; });
 
-    auto vmexit_iter = std::find_if(vmctx.vm_handlers.begin(), vmctx.vm_handlers.end(), [](vm::handler::handler_t h) {
-        if (!strcmp(h.profile->name, "VMEXIT"))
+    //if (vmexit_iter == vmctx.vm_handlers.end())
+    //{
+    //    debug("cant find vm-exit handler\n");
+    //    return -1;
+    //}
+
+    auto vmexit_iter = std::find_if(map_handlers.begin(), map_handlers.end(), [](const std::pair<uint64_t,vm::handler::handler_t> h) {
+        if (!strcmp(h.second.profile->name, "VMEXIT"))
             return true;
         else
             return false; });
 
-    if (vmexit_iter == vmctx.vm_handlers.end())
-    {
-        debug("cant find vm-exit handler\n");
-        return -1;
-    }
 
     uint64_t pc = (uint64_t)module_base + rva;  //一开始的rip
     
@@ -97,7 +110,8 @@ int main(int argc,char* argv[])
         }
         
         pc = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rip"));
-        if (pc == vmexit_iter->address)
+        //if (pc == vmexit_iter->address)
+        if(pc == vmexit_iter->second.address)
         {
             debug("[-]emit the vm-exit\n");
             getchar();
