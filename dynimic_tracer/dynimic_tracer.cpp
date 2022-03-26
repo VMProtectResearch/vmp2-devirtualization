@@ -1,4 +1,5 @@
 ﻿#include <iostream>
+#include <string>
 
 #include <lifters.hpp>  //put llvm headers ahead triton
 
@@ -58,23 +59,18 @@ int main(int argc,char* argv[])
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder(context);
 
-    std::unique_ptr<llvm::Module> llvm_module(new llvm::Module("vmp2", context));
+    lifters::_cvmp2 vmp2(context, builder, new llvm::Module("vmp2.cpp", context));
+
+    Function* main = Function::Create(FunctionType::get(Type::getVoidTy(vmp2.context), {}, false), GlobalValue::LinkageTypes::ExternalLinkage,"main", *vmp2.llvm_module);
+
+    std::stringstream block_name;
+    block_name << "block_" << std::hex << module_base+rva;
+
+    auto bb = BasicBlock::Create(vmp2.context, block_name.str(), main);
+    vmp2.builder.SetInsertPoint(bb);
 
     triton::API _triton;
     _triton.setArchitecture(triton::arch::ARCH_X86_64);
-
-    
-    //auto vmexit_iter = std::find_if(vmctx.vm_handlers.begin(), vmctx.vm_handlers.end(), [](vm::handler::handler_t h) {
-    //    if (!strcmp(h.profile->name, "VMEXIT"))
-    //        return true;
-    //    else
-    //        return false; });
-
-    //if (vmexit_iter == vmctx.vm_handlers.end())
-    //{
-    //    debug("cant find vm-exit handler\n");
-    //    return -1;
-    //}
 
     auto vmexit_iter = std::find_if(map_handlers.begin(), map_handlers.end(), [](const std::pair<uint64_t,vm::handler::handler_t> h) {
         if (!strcmp(h.second.profile->name, "VMEXIT"))
@@ -110,14 +106,12 @@ int main(int argc,char* argv[])
         }
         
         pc = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rip"));
-        //if (pc == vmexit_iter->address)
         if(pc == vmexit_iter->second.address)
         {
             debug("[-]emit the vm-exit\n");
-            getchar();
-            return -1;
+            break;
         }
-        else //匹配其他handler
+        else //match other handler
         {
             auto handler_iter = std::find_if(vmctx.vm_handlers.begin(), vmctx.vm_handlers.end(), [&](vm::handler::handler_t h) {
                 if (pc == h.address)
@@ -128,16 +122,24 @@ int main(int argc,char* argv[])
             if (handler_iter != vmctx.vm_handlers.end())
             {
                 uint64_t rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
-                debug("[vip %llx]%s\n",rsi ,handler_iter->profile->name);
-            }
-        }
+                debug("[vip %llx]%s\n", rsi, handler_iter->profile->name);
 
-        //debug("%llx : %s\n", inst.getAddress(), inst.getDisassembly().c_str());
+
+
+
+
+            }
+            else
+                ;//DebugBreak();  // unknown handler
+
+        }
     }
 
 
+    builder.CreateRetVoid();
+    builder.ClearInsertionPoint();
 
-
+    vmp2.llvm_module->print(outs(), nullptr);
 
     return 0;
 }
