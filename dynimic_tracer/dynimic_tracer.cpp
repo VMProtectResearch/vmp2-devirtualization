@@ -10,14 +10,8 @@
 #include <windows.h>
 #include <linuxpe>
 #include <vmprofiler.hpp>
+#include <triton_utils.hpp>
 
-
-//for x86 complie
-#include "llvm/Support/Host.h" 
-#include "llvm/MC/TargetRegistry.h" 
-#include "llvm/Target/TargetOptions.h"
-#include "llvm/Target/TargetMachine.h"
-#include "llvm/Object/ObjectFile.h"
 
 #pragma comment(linker, "/STACK:36777216")
 
@@ -61,14 +55,6 @@ int main(int argc,char* argv[])
 
     lifters::_cvmp2 vmp2(context, builder, new llvm::Module("vmp2.cpp", context));
 
-    Function* main = Function::Create(FunctionType::get(Type::getVoidTy(vmp2.context), {}, false), GlobalValue::LinkageTypes::ExternalLinkage,"main", *vmp2.llvm_module);
-
-    std::stringstream block_name;
-    block_name << "block_" << std::hex << module_base+rva;
-
-    auto bb = BasicBlock::Create(vmp2.context, block_name.str(), main);
-    vmp2.builder.SetInsertPoint(bb);
-
     triton::API _triton;
     _triton.setArchitecture(triton::arch::ARCH_X86_64);
 
@@ -90,8 +76,12 @@ int main(int argc,char* argv[])
     _triton.setConcreteMemoryAreaValue((uint64_t)module_base, v_im_data);
 
     
-    //初始化堆栈
-    //_triton.setConcreteRegisterValue(_triton.getRegister("rsp"), 0x1000);
+    //随便初始一下堆栈
+    _triton.setConcreteRegisterValue(_triton.getRegister("rsp"), 0x14FF28);
+    _triton.setConcreteMemoryAreaValue(0x140000, std::vector<uint8_t>(8000, 0));
+
+    //初始化rflags
+    _triton.setConcreteRegisterValue(_triton.getRegister("eflags"), 0x200);
 
     while (true)
     {
@@ -109,6 +99,13 @@ int main(int argc,char* argv[])
         if(pc == vmexit_iter->second.address)
         {
             debug("[-]emit the vm-exit\n");
+
+            auto lifter = lifters::_h_map.find(vmexit_iter->second.profile->mnemonic);
+            if (lifter != lifters::_h_map.end() && lifter->second.hf)
+            {
+                lifter->second.hf(vmp2.builder, (uint32_t)0, (uint32_t)0, (uint32_t)0);
+            }
+
             break;
         }
         else //match other handler
@@ -124,7 +121,44 @@ int main(int argc,char* argv[])
                 uint64_t rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
                 debug("[vip %llx]%s\n", rsi, handler_iter->profile->name);
 
+                auto lifter = lifters::_h_map.find(handler_iter->profile->mnemonic);
+                if (lifter != lifters::_h_map.end() && lifter->second.hf)
+                {
+                    //
+                    //读出rbp寄存器的值
+                    //
+                    uint64_t reg_rbp = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rbp"));
 
+                    //当前的virtual ip
+                    uint64_t reg_rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
+                    
+                    
+
+                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ)
+                    {
+                        uint64_t value_to_be_stored = ttutils::to_qword(_triton.getConcreteMemoryAreaValue((uint64_t)reg_rbp, 8));
+
+                        assert(handler_iter->imm_size == 8); //1byte
+
+                        uint8_t al = 0;
+                        uint64_t rbx = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rbx"));
+
+                        auto t = reg_rsi + (uint8_t)vmctx.exec_type * 1;
+                        al = _triton.getConcreteMemoryValue(reg_rsi + (int)vmctx.exec_type * 1);
+
+                        vm::transform::map_t trans{};
+                        vm::handler::get_operand_transforms(handler_iter->instrs, trans);
+
+                        std::pair<uint64_t, uint64_t> new_op;
+                        auto [new_rax,new_rbx] = vm::instrs::decrypt_operand(trans, al, rbx);
+
+                        //获得栈顶的值
+                        uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
+
+                        //将参数传给lifter,交给llvm
+                        lifter->second.hf(vmp2.builder, (uint8_t)new_rax, (uint64_t)rbp_0, (uint32_t)0);
+                    }
+                }
 
 
 
@@ -135,11 +169,8 @@ int main(int argc,char* argv[])
         }
     }
 
-
-    builder.CreateRetVoid();
-    builder.ClearInsertionPoint();
-
     vmp2.llvm_module->print(outs(), nullptr);
+    vmp2.complie();
 
     return 0;
 }

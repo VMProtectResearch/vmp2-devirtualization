@@ -7,8 +7,8 @@ namespace vmp2
 {
     enum class exec_type_t
     {
-        forward,
-        backward
+        forward = 1,
+        backward = -1
     };
 
     enum class version_t
