@@ -103,7 +103,7 @@ int main(int argc,char* argv[])
             auto lifter = lifters::_h_map.find(vmexit_iter->second.profile->mnemonic);
             if (lifter != lifters::_h_map.end() && lifter->second.hf)
             {
-                lifter->second.hf(vmp2.builder, (uint32_t)0, (uint32_t)0, (uint32_t)0);
+                lifter->second.hf(vmp2, (uint32_t)0, (uint32_t)0, (uint32_t)0);
             }
 
             break;
@@ -156,7 +156,7 @@ int main(int argc,char* argv[])
                         uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
 
                         //将参数传给lifter,交给llvm
-                        lifter->second.hf(vmp2.builder, (uint8_t)new_rax, (uint64_t)rbp_0, (uint32_t)0);
+                        lifter->second.hf(vmp2,(uint8_t)new_rax, (uint64_t)rbp_0, (uint32_t)0);
                     }
                 }
 
