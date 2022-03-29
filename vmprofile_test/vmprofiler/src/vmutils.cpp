@@ -76,6 +76,12 @@ void print(zydis_routine_t& routine) {
   }
 }
 
+void print(const zydis_decoded_instr_t& instr, char (&buf)[256]) {
+  ZydisFormatterFormatInstruction(vm::util::g_formatter.get(), &instr, buf,
+                                  256, 0u);
+}
+
+
 bool is_jmp(const zydis_decoded_instr_t& instr) {
   return instr.mnemonic >= ZYDIS_MNEMONIC_JB &&
          instr.mnemonic <= ZYDIS_MNEMONIC_JZ;

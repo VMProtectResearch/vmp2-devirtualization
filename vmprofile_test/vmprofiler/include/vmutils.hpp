@@ -171,6 +171,13 @@ void print(zydis_routine_t &routine);
 void print(const zydis_decoded_instr_t &instr);
 
 /// <summary>
+/// instruction asm string print to buf
+/// </summary>
+/// <param name="instr"></param>
+/// <param name="buf"></param>
+void print(const zydis_decoded_instr_t& instr, char (&buf)[256]);
+
+/// <summary>
 /// determines if a given decoded native instruction is a JCC...
 /// </summary>
 /// <param name="instr"></param>

@@ -53,7 +53,7 @@ int main(int argc,char* argv[])
     llvm::LLVMContext context;
     llvm::IRBuilder<> builder(context);
 
-    lifters::_cvmp2 vmp2(context, builder, new llvm::Module("vmp2.cpp", context));
+    lifters::_cvmp2 vmp2(context, builder, new llvm::Module("vmp2.cpp", context),vmctx);
 
     triton::API _triton;
     _triton.setArchitecture(triton::arch::ARCH_X86_64);
