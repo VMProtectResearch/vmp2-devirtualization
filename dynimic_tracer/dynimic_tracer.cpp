@@ -103,7 +103,7 @@ int main(int argc,char* argv[])
             auto lifter = lifters::_h_map.find(vmexit_iter->second.profile->mnemonic);
             if (lifter != lifters::_h_map.end() && lifter->second.hf)
             {
-                lifter->second.hf(vmp2, (uint32_t)0, (uint32_t)0, (uint32_t)0);
+                lifter->second.hf(vmp2, (uint32_t)0);
             }
 
             break;
@@ -134,7 +134,7 @@ int main(int argc,char* argv[])
                     
                     
 
-                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ)
+                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ || handler_iter->profile->mnemonic == vm::handler::LREGQ||handler_iter->profile->mnemonic == vm::handler::SREGDW)
                     {
                         uint64_t value_to_be_stored = ttutils::to_qword(_triton.getConcreteMemoryAreaValue((uint64_t)reg_rbp, 8));
 
@@ -156,7 +156,18 @@ int main(int argc,char* argv[])
                         uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
 
                         //将参数传给lifter,交给llvm
-                        lifter->second.hf(vmp2,(uint8_t)new_rax, (uint64_t)rbp_0, (uint32_t)0);
+                        lifter->second.hf(vmp2,(uint8_t)new_rax);
+                    }
+                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ || handler_iter->profile->mnemonic == vm::handler::LCONSTDWSXQ)
+                    {
+                        uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
+                        
+                        //将参数传给lifter,交给llvm
+                        lifter->second.hf(vmp2, (uint64_t)rbp_0);
+                    }
+                    else //不需要参数的lift
+                    {
+                        lifter->second.hf(vmp2, (uint64_t)0);
                     }
                 }
 

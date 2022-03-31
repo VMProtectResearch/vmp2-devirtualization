@@ -186,7 +186,6 @@ namespace vm::handler::profile
     };
 
     vm::handler::profile_t lconstwsxq = {
-        // CWDE
         // CDQE
         // SUB RBP, 8
         // MOV [RBP], RAX
