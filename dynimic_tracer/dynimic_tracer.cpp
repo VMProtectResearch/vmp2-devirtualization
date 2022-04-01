@@ -134,7 +134,7 @@ int main(int argc,char* argv[])
                     
                     
 
-                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ || handler_iter->profile->mnemonic == vm::handler::LREGQ||handler_iter->profile->mnemonic == vm::handler::SREGDW)
+                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ || handler_iter->profile->mnemonic == vm::handler::LREGQ||handler_iter->profile->mnemonic == vm::handler::SREGDW || handler_iter->profile->mnemonic == vm::handler::LREGDW) //需要一个idx作为参数
                     {
                         uint64_t value_to_be_stored = ttutils::to_qword(_triton.getConcreteMemoryAreaValue((uint64_t)reg_rbp, 8));
 
@@ -158,12 +158,17 @@ int main(int argc,char* argv[])
                         //将参数传给lifter,交给llvm
                         lifter->second.hf(vmp2,(uint8_t)new_rax);
                     }
-                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ || handler_iter->profile->mnemonic == vm::handler::LCONSTDWSXQ)
+                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ || handler_iter->profile->mnemonic == vm::handler::LCONSTDWSXQ) //需要一个8字节常数作为参数
                     {
                         uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
                         
                         //将参数传给lifter,交给llvm
                         lifter->second.hf(vmp2, (uint64_t)rbp_0);
+                    }
+                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTDW || handler_iter->profile->mnemonic == vm::handler::LCONSTWSXDW || handler_iter->profile->mnemonic == vm::handler::LCONSTBSXDW)
+                    {
+                        uint32_t rbp_0 = ttutils::to_dword(_triton.getConcreteMemoryAreaValue(reg_rbp, 4));
+                        lifter->second.hf(vmp2, (uint32_t)rbp_0);
                     }
                     else //不需要参数的lift
                     {
