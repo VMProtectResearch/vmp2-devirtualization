@@ -13,7 +13,7 @@
 #include <triton_utils.hpp>
 
 
-#pragma comment(linker, "/STACK:36777216")
+#pragma comment(linker, "/STACK:1073741824") //1M
 
 #define debug printf
 
@@ -83,9 +83,9 @@ int main(int argc,char* argv[])
     //初始化rflags
     _triton.setConcreteRegisterValue(_triton.getRegister("eflags"), 0x200);
 
+    triton::arch::Instruction inst;
     while (true)
     {
-        triton::arch::Instruction inst;
         inst.setOpcode((uint8_t*)pc, 16);
         inst.setAddress(pc);
 
@@ -121,6 +121,24 @@ int main(int argc,char* argv[])
                 uint64_t rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
                 debug("[vip %llx]%s\n", rsi, handler_iter->profile->name);
 
+                if (handler_iter->profile->mnemonic == vm::handler::JMP) {
+
+                    static int count = 0;
+                    uint64_t reg_rbp = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rbp"));
+                    uint32_t new_rsi = 0;
+                    if (count == 0)
+                    {
+                        new_rsi = 0x4000A4DD;
+                    }
+                    else if (count == 1)
+                    {
+                        new_rsi = 0x4000A988;
+                    }
+
+                    _triton.setConcreteMemoryAreaValue(reg_rbp, (uint8_t*)&new_rsi,4);
+                    count++;
+                }
+
                 auto lifter = lifters::_h_map.find(handler_iter->profile->mnemonic);
                 if (lifter != lifters::_h_map.end() && lifter->second.hf)
                 {
@@ -131,10 +149,10 @@ int main(int argc,char* argv[])
 
                     //当前的virtual ip
                     uint64_t reg_rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
-                    
-                    
 
-                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ || handler_iter->profile->mnemonic == vm::handler::LREGQ||handler_iter->profile->mnemonic == vm::handler::SREGDW || handler_iter->profile->mnemonic == vm::handler::LREGDW) //需要一个idx作为参数
+
+
+                    if (handler_iter->profile->mnemonic == vm::handler::SREGQ || handler_iter->profile->mnemonic == vm::handler::LREGQ || handler_iter->profile->mnemonic == vm::handler::SREGDW || handler_iter->profile->mnemonic == vm::handler::LREGDW) //需要一个idx作为参数
                     {
                         uint64_t value_to_be_stored = ttutils::to_qword(_triton.getConcreteMemoryAreaValue((uint64_t)reg_rbp, 8));
 
@@ -150,18 +168,18 @@ int main(int argc,char* argv[])
                         vm::handler::get_operand_transforms(handler_iter->instrs, trans);
 
                         std::pair<uint64_t, uint64_t> new_op;
-                        auto [new_rax,new_rbx] = vm::instrs::decrypt_operand(trans, al, rbx);
+                        auto [new_rax, new_rbx] = vm::instrs::decrypt_operand(trans, al, rbx);
 
                         //获得栈顶的值
                         uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
 
                         //将参数传给lifter,交给llvm
-                        lifter->second.hf(vmp2,(uint8_t)new_rax);
+                        lifter->second.hf(vmp2, (uint8_t)new_rax);
                     }
                     else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ || handler_iter->profile->mnemonic == vm::handler::LCONSTDWSXQ) //需要一个8字节常数作为参数
                     {
                         uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
-                        
+
                         //将参数传给lifter,交给llvm
                         lifter->second.hf(vmp2, (uint64_t)rbp_0);
                     }
@@ -180,7 +198,7 @@ int main(int argc,char* argv[])
 
             }
             else
-                ;//DebugBreak();  // unknown handler
+                ;
 
         }
     }
