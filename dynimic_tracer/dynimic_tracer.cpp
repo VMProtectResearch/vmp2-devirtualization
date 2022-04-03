@@ -121,24 +121,6 @@ int main(int argc,char* argv[])
                 uint64_t rsi = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
                 debug("[vip %llx]%s\n", rsi, handler_iter->profile->name);
 
-                if (handler_iter->profile->mnemonic == vm::handler::JMP) {
-
-                    static int count = 0;
-                    uint64_t reg_rbp = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rbp"));
-                    uint32_t new_rsi = 0;
-                    if (count == 0)
-                    {
-                        new_rsi = 0x4000A4DD;
-                    }
-                    else if (count == 1)
-                    {
-                        new_rsi = 0x4000A988;
-                    }
-
-                    _triton.setConcreteMemoryAreaValue(reg_rbp, (uint8_t*)&new_rsi,4);
-                    count++;
-                }
-
                 auto lifter = lifters::_h_map.find(handler_iter->profile->mnemonic);
                 if (lifter != lifters::_h_map.end() && lifter->second.hf)
                 {
