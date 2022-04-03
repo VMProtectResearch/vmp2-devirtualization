@@ -153,17 +153,30 @@ int main(int argc,char* argv[])
                         auto [new_rax, new_rbx] = vm::instrs::decrypt_operand(trans, al, rbx);
 
                         //获得栈顶的值
-                        uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
+                        //uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
 
                         //将参数传给lifter,交给llvm
                         lifter->second.hf(vmp2, (uint8_t)new_rax);
                     }
-                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ || handler_iter->profile->mnemonic == vm::handler::LCONSTDWSXQ) //需要一个8字节常数作为参数
+                    else if (handler_iter->profile->mnemonic == vm::handler::LCONSTQ) //需要一个8字节常数作为参数
                     {
-                        uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
+                        assert(handler_iter->imm_size == 64);
+                        //uint64_t rbp_0 = ttutils::to_qword(_triton.getConcreteMemoryAreaValue(reg_rbp, 8));
+
+                        uint64_t rsi_reg = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rsi"));
+                        uint64_t encrypt_value = ttutils::to_qword(_triton.getConcreteMemoryAreaValue((uint64_t)rsi_reg+ (int)vmctx.exec_type * 8, 8));
+
+                        uint64_t rax = encrypt_value;
+                        uint64_t rbx = (uint64_t)_triton.getConcreteRegisterValue(_triton.getRegister("rbx"));
+
+                        vm::transform::map_t trans{};
+                        vm::handler::get_operand_transforms(handler_iter->instrs, trans);
+
+                        std::pair<uint64_t, uint64_t> new_op;
+                        auto [new_rax, new_rbx] = vm::instrs::decrypt_operand(trans, rax, rbx);
 
                         //将参数传给lifter,交给llvm
-                        lifter->second.hf(vmp2, (uint64_t)rbp_0);
+                        lifter->second.hf(vmp2, (uint64_t)new_rax);
                     }
                     else if (handler_iter->profile->mnemonic == vm::handler::LCONSTDW || handler_iter->profile->mnemonic == vm::handler::LCONSTWSXDW || handler_iter->profile->mnemonic == vm::handler::LCONSTBSXDW)
                     {
