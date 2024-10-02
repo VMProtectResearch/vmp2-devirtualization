@@ -73,19 +73,23 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\linux-pe\includes;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\msvc;$(IncludePath)</IncludePath>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\linux-pe\includes;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\msvc;$(IncludePath)</IncludePath>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
-    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\linux-pe\includes;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\msvc;$(IncludePath)</IncludePath>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <LinkIncremental>false</LinkIncremental>
-    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(IncludePath)</IncludePath>
+    <IncludePath>$(SOLUTIONDIR)vmprofile_test\cli-parser;$(SOLUTIONDIR)vmprofile_test\vmprofiler\include;$(SOLUTIONDIR)vmprofile_test\xtils;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\dependencies\zycore\include;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\linux-pe\includes;$(SOLUTIONDIR)vmprofile_test\vmprofiler\dependencies\zydis\msvc;$(IncludePath)</IncludePath>
+    <CopyLocalProjectReference>true</CopyLocalProjectReference>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -187,11 +191,6 @@
     <ClCompile Include="vmprofile_test.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">
-      <Project>{88a23124-5640-35a0-b890-311d7a67a7d2}</Project>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <ClInclude Include="vmprofiler\include\calc_jmp.hpp" />
     <ClInclude Include="vmprofiler\include\scn.hpp" />
     <ClInclude Include="vmprofiler\include\transform.hpp" />
@@ -204,6 +203,11 @@
     <ClInclude Include="vmprofiler\include\vmprofiler.hpp" />
     <ClInclude Include="vmprofiler\include\vmprofiles.hpp" />
     <ClInclude Include="vmprofiler\include\vmutils.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">
+      <Project>{88a23124-5640-35a0-b890-311d7a67a7d2}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
