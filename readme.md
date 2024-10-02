@@ -1,4 +1,4 @@
-# trace vm 
+# VMProtect 2.X  Devirtualization Example
 
 This project is an txtension of the vmprofile framework developed by _xeroxz  
 
@@ -8,5 +8,10 @@ This project is an txtension of the vmprofile framework developed by _xeroxz
 can devirtualize one basic block(one vm-entry -> vm-exit)  
 lifters are incomplete, needs to be improved  
 
+### 
+2024.10.2
+more easy build
+
+### 
 
 
