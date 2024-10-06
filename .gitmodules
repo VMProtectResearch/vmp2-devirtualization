@@ -7,3 +7,6 @@
 [submodule "lifters"]
 	path = lifters
 	url = https://github.com/aobfucated/lifters.git
+[submodule "vmprofile_test/vmprofiler/dependencies/zydis"]
+	path = vmprofile_test/vmprofiler/dependencies/zydis
+	url = https://github.com/zyantific/zydis
