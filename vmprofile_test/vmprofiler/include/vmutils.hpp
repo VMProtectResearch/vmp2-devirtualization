@@ -90,7 +90,7 @@ inline void init() {
     vm::util::g_formatter = std::make_shared<ZydisFormatter>();
 
     ZydisDecoderInit(vm::util::g_decoder.get(), ZYDIS_MACHINE_MODE_LONG_64,
-                     ZYDIS_ADDRESS_WIDTH_64);
+                     ZYDIS_STACK_WIDTH_64);
 
     ZydisFormatterInit(vm::util::g_formatter.get(),
                        ZYDIS_FORMATTER_STYLE_INTEL);
