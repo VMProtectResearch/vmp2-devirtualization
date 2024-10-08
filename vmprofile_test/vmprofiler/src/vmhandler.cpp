@@ -116,12 +116,6 @@ namespace vm::handler
         if ( !imm_fetch.has_value() )
             return false;
 
-        // 我发现有些简单handler确实没有变换指令的
-        // 假设Handler最低4条指令
-        if (vm_handler.size() <= 4) {
-          return true;
-        }
-
         // this finds the first transformation which looks like:
         // transform rax, rbx <--- note these registers can be smaller so we to64 them...
         // 从取出Operand那条指令往下扫描
@@ -134,8 +128,7 @@ namespace vm::handler
             } );
 
         if (transform_instr == vm_handler.end()) {
-            //TODO : 
-          return true;
+          return false;
         }
 
         // look for a primer/instruction that alters RAX prior to the 5 transformations...

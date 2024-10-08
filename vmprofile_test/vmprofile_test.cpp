@@ -88,11 +88,10 @@ int main(int argc,const char* argv[])
     }
 
 $start:
-    //mov     al, [rsi-1]
-    //lea     rsi, [rsi-1]
-    uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1;
-    //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
-    //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
+    auto get_opcode_instr = vmctx.calc_jmp[0];
+    uint8_t* vip = (uint8_t*)vmctx.opcode_stream + get_opcode_instr.instr.operands[1].mem.disp.value;
+
+    // rolling key
     vm::util::Reg rbx(vmctx.opcode_stream - module_base + image_base);
 
     // 一开始的值是未知的,假设是0

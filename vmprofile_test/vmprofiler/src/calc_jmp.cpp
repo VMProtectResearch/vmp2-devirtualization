@@ -12,7 +12,8 @@ namespace vm::calc_jmp
         //记录从取opcode到jmp reg进入handler前的指令
         calc_jmp.insert( calc_jmp.end(), result.value(), vm_entry.end() );
 
-        //vm::util::print(calc_jmp);
+        LOG(INFO) << "calc_jump ";
+        vm::util::print(calc_jmp);
 
         return true;
     }
