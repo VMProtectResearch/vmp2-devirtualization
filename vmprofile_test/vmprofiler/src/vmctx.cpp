@@ -38,7 +38,7 @@ bool ctx_t::init(bool first) {
   //
   vm::util::deobfuscate(vm_entry);
 
-  LOG(DEBUG) << "vm_entry after deobfuscate";
+  LOG(DEBUG) << "print vm_entry after deobfuscate";
   vm::util::print(vm_entry);
   //获得取opcode到jmp到handler的分支指令
   if (!vm::calc_jmp::get(vm_entry, calc_jmp)) return false;

@@ -48,11 +48,11 @@ namespace vm::handler
     bool get_all( std::uintptr_t module_base, std::uintptr_t image_base, zydis_routine_t &vm_entry,
                   std::uintptr_t *vm_handler_table, std::vector< vm::handler::handler_t > &vm_handlers )
     {
-        LOG(INFO) << "Try get all handles";
         zydis_decoded_instr_t instr;
         if ( !vm::handler::table::get_transform( vm_entry, &instr ) )
             return false;
 
+        LOG(INFO) << "Try get all handles";
         for ( auto idx = 0u; idx < 256; ++idx )
         {
             handler_t vm_handler;
@@ -61,8 +61,6 @@ namespace vm::handler
             zydis_routine_t vm_handler_instrs;
 
             const auto decrypt_val = vm::handler::table::decrypt( instr, vm_handler_table[ idx ] );
-            LOG(INFO) << "decrypt handle index "
-                      << "[" << std::dec << idx << "] " << std::hex << decrypt_val;
             
             if ( !vm::handler::get( vm_handler_instrs, ( decrypt_val - image_base ) + module_base ) )
                 return false;
@@ -73,6 +71,7 @@ namespace vm::handler
             if (has_imm) {
               if(!vm::handler::get_operand_transforms(vm_handler_instrs,
                                                        transforms)) {
+                LOG(ERROR) << "has_imm , but no transforms";
                 return false;
               }
             }
@@ -83,6 +82,13 @@ namespace vm::handler
             vm_handler.transforms = transforms;
             vm_handler.profile = vm::handler::get_profile( vm_handler );
             vm_handlers.push_back( vm_handler );
+
+            LOG(INFO) << "decrypt handle index "
+                      << "[" << std::dec << idx << "] " << std::hex
+                      << decrypt_val << " "
+                      << (vm_handler.profile ? vm_handler.profile->name
+                                             : "no_profile")
+                      << " " << (has_imm ? "has_imm" : "");
         }
 
         return true;
@@ -110,20 +116,26 @@ namespace vm::handler
         if ( !imm_fetch.has_value() )
             return false;
 
+        // 我发现有些简单handler确实没有变换指令的
+        // 假设Handler最低4条指令
+        if (vm_handler.size() <= 4) {
+          return true;
+        }
+
         // this finds the first transformation which looks like:
         // transform rax, rbx <--- note these registers can be smaller so we to64 them...
+        // 从取出Operand那条指令往下扫描
         auto transform_instr =
             std::find_if( imm_fetch.value(), vm_handler.end(), []( const zydis_instr_t &instr_data ) -> bool {
-                return vm::transform::valid( instr_data.instr.mnemonic ) &&
-                       instr_data.instr.operands[ 0 ].actions & ZYDIS_OPERAND_ACTION_WRITE &&
-                       util::reg::compare( instr_data.instr.operands[ 0 ].reg.value, ZYDIS_REGISTER_RAX ) &&
-                       util::reg::compare( instr_data.instr.operands[ 1 ].reg.value, ZYDIS_REGISTER_RBX );
+                return vm::transform::valid( instr_data.instr.mnemonic ) &&   // 在支持变换的列表中
+                       (instr_data.instr.operands[ 0 ].actions & ZYDIS_OPERAND_ACTION_WRITE &&  // 写寄存器
+                       util::reg::compare( instr_data.instr.operands[ 0 ].reg.value, ZYDIS_REGISTER_RAX ) &&    
+                       util::reg::compare( instr_data.instr.operands[ 1 ].reg.value, ZYDIS_REGISTER_RBX ));
             } );
 
-        // 很小情况下会遇到transform_instr为空,也就是opcode不需要变换的情况
         if (transform_instr == vm_handler.end()) {
-            LOG(WARNING) << "transform_instr is null";
-            return true;
+            //TODO : 
+          return true;
         }
 
         // look for a primer/instruction that alters RAX prior to the 5 transformations...

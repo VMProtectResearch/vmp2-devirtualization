@@ -75,7 +75,10 @@ void print(zydis_routine_t& routine) {
     ZydisFormatterFormatInstruction(vm::util::g_formatter.get(), &instr, buffer,
                                     sizeof(buffer), addr);
     //std::printf("> %p %s\n", addr, buffer);
-    LOG(DEBUG) << std::format("> {:#x} {} {}", addr, vectorToHexString(raw),
+    //LOG(DEBUG) << std::format("> {:#x} {} {}", addr, vectorToHexString(raw),
+    //                          buffer);
+
+    LOG(DEBUG) << std::format("> {:#x} {} {}", addr, "",
                               buffer);
   }
 }
@@ -118,10 +121,6 @@ bool flatten(zydis_routine_t& routine,
     if (++instr_cnt > max_instrs)
       return false;
   
-    if (routine_addr == 0x14000811E) {
-      assert(0);
-    }
-
     // detect if we have already been at this instruction... if so that means
     // there is a loop and we are going to just return...
     if (std::find_if(routine.begin(), routine.end(),

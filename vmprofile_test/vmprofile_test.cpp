@@ -8,6 +8,7 @@
 #include <vmprofiler.hpp>
 #include <xtils.hpp>
 #include <cli-parser.hpp>
+#include <linuxpe>
 
 INITIALIZE_EASYLOGGINGPP
 
@@ -48,13 +49,12 @@ int main(int argc,const char* argv[])
     
     InitEasyloggingPP("vmp2.log");
 
-    
-
     const auto module_base = reinterpret_cast<std::uintptr_t>(
         LoadLibraryExA(parser.get<std::string>("bin").c_str(),
             NULL, DONT_RESOLVE_DLL_REFERENCES));
 
     LOG(INFO) << "Devirt " << parser.get<std::string>("bin");
+    LOG(INFO) << "module_base " << std::hex << module_base;
 
     if (!module_base)
     {
@@ -64,9 +64,15 @@ int main(int argc,const char* argv[])
 
     const auto vm_entry_rva = stoll(parser.get<std::string>("rva"),0,16);
 
-
-    const auto image_size = NT_HEADER(module_base)->OptionalHeader.SizeOfImage;
-    const auto image_base = 0x140000000; //must 0x140000000   bugbug?
+    std::vector< uint8_t > raw;
+    xtils::um_t::get_instance()->open_binary_file(parser.get<std::string>("bin").c_str(), raw);
+    win::image_x64_t* pe = (win::image_x64_t*)raw.data();
+    
+    
+    const auto image_size = pe->get_nt_headers()->optional_header.size_image;
+    const auto image_base = pe->get_nt_headers()->optional_header.image_base;
+   
+    LOG(INFO) << "image_base " << image_base << " image_size " << image_size;
 
     if (NT_HEADER(module_base)->FileHeader.Machine != IMAGE_FILE_MACHINE_AMD64)
     {
@@ -87,13 +93,17 @@ $start:
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream - 1;
     //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
     //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
-    vm::util::Reg rbx(vmctx.opcode_stream - module_base + 0x140000000);
-    vm::util::Reg rax(0xDEADC00D);
+    vm::util::Reg rbx(vmctx.opcode_stream - module_base + image_base);
+
+    // 一开始的值是未知的,假设是0
+    vm::util::Reg rax(0);
     for (;;)
     {
 
 //calc_jmp
+
         uint8_t op = *vip;
+        rax.w_8(op);
 
 
         for (auto& insn : vmctx.update_opcode) {
@@ -244,7 +254,7 @@ $start:
         }//switch end
         
         assert(ptr.profile && "profile cant be null , need implement");
-        LOG(DEBUG) << "current vip " << std::hex << (void*)vip << " " << "opcode " << (int)op << " handler " << ptr.address << " " << ptr.profile->name << " " << rax.r_64();
+        LOG(DEBUG) << "current vip " << std::hex << (void*)vip << " " << "opcode " << (int)op << " handler " << ptr.address << " imm_size " << (int)ptr.imm_size << " " << ptr.profile->name << " " << rax.r_64();
         
 
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
