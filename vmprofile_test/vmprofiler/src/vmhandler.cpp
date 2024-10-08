@@ -43,6 +43,7 @@ namespace vm::handler
     bool get_all( std::uintptr_t module_base, std::uintptr_t image_base, zydis_routine_t &vm_entry,
                   std::uintptr_t *vm_handler_table, std::vector< vm::handler::handler_t > &vm_handlers )
     {
+        LOG(INFO) << "Try get all handles";
         zydis_decoded_instr_t instr;
         if ( !vm::handler::table::get_transform( vm_entry, &instr ) )
             return false;
@@ -51,18 +52,27 @@ namespace vm::handler
         {
             handler_t vm_handler;
             vm::transform::map_t transforms;
+            // 提取handler的指令
             zydis_routine_t vm_handler_instrs;
 
             const auto decrypt_val = vm::handler::table::decrypt( instr, vm_handler_table[ idx ] );
+            LOG(INFO) << "decrypt handle index "
+                      << "[" << std::dec << idx << "] " << std::hex << decrypt_val;
+            
             if ( !vm::handler::get( vm_handler_instrs, ( decrypt_val - image_base ) + module_base ) )
                 return false;
+            LOG(DEBUG) << "print handle " << idx;
+            vm::util::print(vm_handler_instrs);
 
             const auto has_imm = vm::handler::has_imm( vm_handler_instrs );
             const auto imm_size = vm::handler::imm_size( vm_handler_instrs );
 
-            if ( has_imm &&
-                 ( !vm::handler::get_operand_transforms( vm_handler_instrs, transforms ) || !imm_size.has_value() ) )
+            if (has_imm) {
+              if(!vm::handler::get_operand_transforms(vm_handler_instrs,
+                                                       transforms)) {
                 return false;
+              }
+            }
 
             vm_handler.address = ( decrypt_val - image_base ) + module_base;
             vm_handler.instrs = vm_handler_instrs;
@@ -107,8 +117,11 @@ namespace vm::handler
                        util::reg::compare( instr_data.instr.operands[ 1 ].reg.value, ZYDIS_REGISTER_RBX );
             } );
 
-        if ( transform_instr == vm_handler.end() )
-            return false;
+        // 很小情况下会遇到transform_instr为空,也就是opcode不需要变换的情况
+        if (transform_instr == vm_handler.end()) {
+            LOG(WARNING) << "transform_instr is null";
+            return true;
+        }
 
         // look for a primer/instruction that alters RAX prior to the 5 transformations...
         auto generic0 =
@@ -153,8 +166,6 @@ namespace vm::handler
     vm::handler::profile_t *get_profile( handler_t &vm_handler )
     {
         static const auto vcontains = []( vm::handler::profile_t *vprofile, handler_t *vm_handler ) -> bool {
-            if ( vprofile->imm_size != vm_handler->imm_size )
-                return false;
 
             zydis_routine_t::iterator contains = vm_handler->instrs.begin();
 
@@ -171,10 +182,13 @@ namespace vm::handler
             return true;
         };
 
-        for ( auto profile : vm::handler::profile::all )
+        for ( auto profile : vm::handler::profile::all ) // 从内置的profile里找
             if ( vcontains( profile, &vm_handler ) )
                 return profile;
 
+        LOG(ERROR)
+            << "Cant find correspond vm profile , need to implement it -> "
+            << vm_handler.address;
         return nullptr;
     }
 
@@ -206,7 +220,7 @@ namespace vm::handler
 
             ZyanU64 ptr = 0ull;
             ZydisCalcAbsoluteAddress( &result->instr, &result->instr.operands[ 1 ], result->addr, &ptr );
-
+            LOG(INFO) << "Find Handle table " << std::hex << (void*)ptr;
             return reinterpret_cast< std::uintptr_t * >( ptr );
         }
 
@@ -255,7 +269,8 @@ namespace vm::handler
 
             *transform_instr = handler_transform->instr;
             
-            //vm::util::print(reinterpret_cast<zydis_decoded_instr_t&>(*transform_instr));
+            LOG(INFO) << "Find transform_instr";
+            vm::util::print(reinterpret_cast<zydis_decoded_instr_t&>(*transform_instr));
 
             return true;
         }

@@ -9,3 +9,6 @@
 #include <calc_jmp.hpp>
 #include <vmlocate.hpp>
 #include <virtual_machine_stream.hpp>
+#define NOMINMAX
+#include "../../easylogging++.h"
+#include "../../ScopeExit.h"

@@ -9,7 +9,29 @@
 #include <xtils.hpp>
 #include <cli-parser.hpp>
 
+INITIALIZE_EASYLOGGINGPP
+
 using namespace std;
+
+void InitEasyloggingPP(const std::string& logpath) {
+    std::remove(logpath.c_str());
+
+    el::Configurations conf;
+    conf.setGlobally(el::ConfigurationType::Enabled, "true");
+    conf.setGlobally(el::ConfigurationType::Filename, logpath.c_str());
+    conf.setGlobally(el::ConfigurationType::MaxLogFileSize, "30000000");
+
+    conf.setGlobally(el::ConfigurationType::ToFile, "true");
+    conf.setGlobally(el::ConfigurationType::ToStandardOutput, "false");
+
+    conf.setGlobally(el::ConfigurationType::Format, "%msg");
+    conf.setGlobally(el::ConfigurationType::LogFlushThreshold, "1");
+#ifndef _DEBUG
+    conf.set(el::Level::Debug, el::ConfigurationType::Enabled, "false");
+#endif // _DEBUG
+
+    el::Loggers::reconfigureAllLoggers(conf);
+}
 
 int main(int argc,const char* argv[])
 {
@@ -23,13 +45,16 @@ int main(int argc,const char* argv[])
         std::cout << err << std::endl;
         return -1;
     }
-
+    
+    InitEasyloggingPP("vmp2.log");
 
     
 
     const auto module_base = reinterpret_cast<std::uintptr_t>(
         LoadLibraryExA(parser.get<std::string>("bin").c_str(),
             NULL, DONT_RESOLVE_DLL_REFERENCES));
+
+    LOG(INFO) << "Devirt " << parser.get<std::string>("bin");
 
     if (!module_base)
     {
@@ -63,12 +88,13 @@ $start:
     //uint64_t rbx = vmctx.opcode_stream; //mov     rbx, rsi
     //uint8_t bl = static_cast<uint8_t>(rbx); //rolling key
     vm::util::Reg rbx(vmctx.opcode_stream - module_base + 0x140000000);
-    uint64_t _rax; //for handlers to output info
+    vm::util::Reg rax(0xDEADC00D);
     for (;;)
     {
 
 //calc_jmp
         uint8_t op = *vip;
+
 
         for (auto& insn : vmctx.update_opcode) {
             if(!vm::transform::has_imm(&insn.instr)) //sub al,bl
@@ -125,7 +151,7 @@ $start:
             }
 
 
-            _rax = (uint64_t)al;
+            rax.w_8(al);
         }
             break;
         case 16:
@@ -153,8 +179,7 @@ $start:
                 else
                     DebugBreak();
             }
-
-            _rax = (uint64_t)ax;
+            rax.w_16(ax);
         }
             break;
         case 32:
@@ -185,25 +210,25 @@ $start:
                 }
             }
         
-            _rax = (uint64_t)eax;
+            rax.w_64(eax);
         }
         break;
         case 64:
         {
-            uint64_t rax; //temp var
+            uint64_t t_rax; //temp var
             vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &rax);
 
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_RAX)
                 {
                     if (!vm::transform::has_imm(&insn.second))
-                        rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rax, rbx.r_64());
+                        t_rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, t_rax, rbx.r_64());
                     else
-                        rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rax, insn.second.operands[1].imm.value.u);
+                        t_rax = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, t_rax, insn.second.operands[1].imm.value.u);
                 }
                 else if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_RBX)
                 {
-                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_64(), rax);
+                    auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_64(), t_rax);
                     rbx.w_64(static_cast<uint64_t>(r));
                 }
                 else
@@ -212,16 +237,15 @@ $start:
                 }
             }
 
-            _rax = (uint64_t)rax;
+            rax.w_64(t_rax);
         }
         break;
         default:break;
         }//switch end
-
-        printf("[vip %p][0x%p %s] ", vip, ptr.address, ptr.profile ? ptr.profile->name : "UNKNOW");
-        if (ptr.profile && ptr.profile->rax_info)
-            ptr.profile->rax_info(_rax);
-        printf("\n");
+        
+        assert(ptr.profile && "profile cant be null , need implement");
+        LOG(DEBUG) << "current vip " << std::hex << (void*)vip << " " << "opcode " << (int)op << " handler " << ptr.address << " " << ptr.profile->name << " " << rax.r_64();
+        
 
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
         {

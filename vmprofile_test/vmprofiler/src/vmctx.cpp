@@ -11,7 +11,7 @@ ctx_t::ctx_t(std::uintptr_t module_base, std::uintptr_t image_base,
 bool ctx_t::init(bool first) {
 
   if (first)
-    vm::util::init();  
+    vm::util::init();   // 初始化zydis
   else {
     //clear old data
     vm_handlers.clear();
@@ -24,6 +24,7 @@ bool ctx_t::init(bool first) {
   //
   //解决分支的问题
   //
+
   if (!vm::util::flatten(vm_entry, vm_entry_rva + module_base)) return false;
 
   //output flatten vm_entry
@@ -37,6 +38,8 @@ bool ctx_t::init(bool first) {
   //
   vm::util::deobfuscate(vm_entry);
 
+  LOG(DEBUG) << "vm_entry after deobfuscate";
+  vm::util::print(vm_entry);
   //获得取opcode到jmp到handler的分支指令
   if (!vm::calc_jmp::get(vm_entry, calc_jmp)) return false;
 

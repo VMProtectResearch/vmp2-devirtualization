@@ -129,6 +129,9 @@
     <ClCompile Include="vmprofiler\src\virtual_machine_stream.cpp">
       <Filter>vmprofille</Filter>
     </ClCompile>
+    <ClCompile Include="..\easylogging++.cc">
+      <Filter>vmprofille</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vmprofiler\include\calc_jmp.hpp">
@@ -166,6 +169,12 @@
     </ClInclude>
     <ClInclude Include="vmprofiler\include\vmutils.hpp">
       <Filter>vmprofille\include</Filter>
+    </ClInclude>
+    <ClInclude Include="xtils\xtils.hpp">
+      <Filter>vmprofille</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ScopeExit.h">
+      <Filter>源文件</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

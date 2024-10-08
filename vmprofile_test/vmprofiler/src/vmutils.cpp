@@ -64,7 +64,8 @@ void print(const zydis_decoded_instr_t& instr) {
   char buffer[256];
   ZydisFormatterFormatInstruction(vm::util::g_formatter.get(), &instr, buffer,
                                   sizeof(buffer), 0u);
-  std::puts(buffer);
+  //std::puts(buffer);
+  LOG(DEBUG) << buffer;
 }
 
 void print(zydis_routine_t& routine) {
@@ -72,8 +73,11 @@ void print(zydis_routine_t& routine) {
   for (auto [instr, raw, addr] : routine) {
     ZydisFormatterFormatInstruction(vm::util::g_formatter.get(), &instr, buffer,
                                     sizeof(buffer), addr);
-    std::printf("> %p %s\n", addr, buffer);
+    //std::printf("> %p %s\n", addr, buffer);
+    LOG(DEBUG) << std::format("> {:#x} {} {}", addr, vectorToHexString(raw),
+                              buffer);
   }
+  LOG(DEBUG) << "\n\n";
 }
 
 void print(const zydis_decoded_instr_t& instr, char (&buf)[256]) {
@@ -88,7 +92,8 @@ bool is_jmp(const zydis_decoded_instr_t& instr) {
 }
 
 //
-// 跟踪jmp直到遇到jmp reg或call reg,目的是去除多余分支
+// 跟踪jmp直到遇到jmp reg或call reg,vmentry最后通过jmp reg开始分发,handler的话最终会返回vmentry的中间重新分发的
+// 所以通过jmp reg来收集流程一般来说是比较正确的
 //
 bool flatten(zydis_routine_t& routine,
              std::uintptr_t routine_addr,
@@ -98,11 +103,23 @@ bool flatten(zydis_routine_t& routine,
   zydis_decoded_instr_t instr;
   std::uint32_t instr_cnt = 0u;
 
-  while (ZYAN_SUCCESS(ZydisDecoderDecodeBuffer(
-      vm::util::g_decoder.get(), reinterpret_cast<void*>(routine_addr), 0x1000,
+  auto RAII = llvm::make_scope_exit([&]() { auto it = routine.begin();
+    for (; it != routine.end(); it++) {
+      if (it->instr.mnemonic == ZydisMnemonic::ZYDIS_MNEMONIC_INVALID) {
+        it = routine.erase(it);
+      }
+    }
+      
+      });
+
+  while ((ZydisDecoderDecodeBuffer(
+      vm::util::g_decoder.get(), reinterpret_cast<void*>(routine_addr), 15,
       &instr))) {
     if (++instr_cnt > max_instrs)
       return false;
+   
+    vm::util::print(instr);
+
     // detect if we have already been at this instruction... if so that means
     // there is a loop and we are going to just return...
     if (std::find_if(routine.begin(), routine.end(),
@@ -140,6 +157,8 @@ bool flatten(zydis_routine_t& routine,
     if (module_base && !scn::executable(module_base, routine_addr))
       return false;
   }
+
+  LOG(ERROR) << "ZydisDecoderDecodeBuffer Fail at " << std::hex << routine_addr;
   return false;
 }
 

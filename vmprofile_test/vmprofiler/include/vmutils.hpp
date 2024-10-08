@@ -9,6 +9,9 @@
 #include <optional>
 #include <thread>
 #include <vector>
+#include <iomanip>
+#include <cstdint>
+#include <sstream>
 
 #ifdef _MSC_VER
 
@@ -95,6 +98,15 @@ inline void init() {
     ZydisFormatterInit(vm::util::g_formatter.get(),
                        ZYDIS_FORMATTER_STYLE_INTEL);
   }
+}
+
+inline std::string vectorToHexString(const std::vector<u8>& raw) {
+  std::ostringstream oss;
+  for (u8 byte : raw) {
+    oss << std::hex << std::setw(2) << std::setfill('0')
+        << static_cast<int>(byte) << " ";
+  }
+  return oss.str();
 }
 
 inline bool open_binary_file(const std::string &file,

@@ -154,6 +154,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\easylogging++.cc" />
     <ClCompile Include="vmprofiler\src\calc_jmp.cpp" />
     <ClCompile Include="vmprofiler\src\scn.cpp" />
     <ClCompile Include="vmprofiler\src\virtual_machine_stream.cpp" />
@@ -191,6 +192,7 @@
     <ClCompile Include="vmprofile_test.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\ScopeExit.h" />
     <ClInclude Include="vmprofiler\include\calc_jmp.hpp" />
     <ClInclude Include="vmprofiler\include\scn.hpp" />
     <ClInclude Include="vmprofiler\include\transform.hpp" />
@@ -203,6 +205,7 @@
     <ClInclude Include="vmprofiler\include\vmprofiler.hpp" />
     <ClInclude Include="vmprofiler\include\vmprofiles.hpp" />
     <ClInclude Include="vmprofiler\include\vmutils.hpp" />
+    <ClInclude Include="xtils\xtils.hpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="vmprofiler\dependencies\zydis\msvc\zydis\Zydis.vcxproj">

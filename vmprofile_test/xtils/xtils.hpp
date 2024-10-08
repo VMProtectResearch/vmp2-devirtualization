@@ -18,12 +18,12 @@
 #include <winternl.h>
 
 #define LOG_SIG "[xtils]"
-#define LOG( ... )                                                                                                     \
-    {                                                                                                                  \
-        char buff[ 256 ];                                                                                              \
-        snprintf( buff, sizeof buff, LOG_SIG##__VA_ARGS__ );                                                           \
-        OutputDebugStringA( buff );                                                                                    \
-    }
+//#define LOG( ... )                                                                                                     \
+//    {                                                                                                                  \
+//        char buff[ 256 ];                                                                                              \
+//        snprintf( buff, sizeof buff, LOG_SIG##__VA_ARGS__ );                                                           \
+//        OutputDebugStringA( buff );                                                                                    \
+//    }
 
 #define NT_HEADER( x )                                                                                                 \
     reinterpret_cast< PIMAGE_NT_HEADERS >( uint64_t( x ) + reinterpret_cast< PIMAGE_DOS_HEADER >( x )->e_lfanew )

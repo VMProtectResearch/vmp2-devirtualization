@@ -24,8 +24,7 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
       }}},
-    vm::handler::extention_t::none, 
-    [](uint64_t rax) { printf("0x%llx", rax); },
+    vm::handler::extention_t::none
     };
 
     vm::handler::profile_t lconstdw = {
@@ -49,7 +48,6 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
             } } } ,vm::handler::extention_t::none,
-            [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstw = {
@@ -74,7 +72,6 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_AX;
             } } } ,
             vm::handler::extention_t::none,
-            [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstbzxw = {
@@ -100,7 +97,6 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_AX;
             } } },
             vm::handler::extention_t::none,
-            [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstbsxdw = {
@@ -127,8 +123,7 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
             } } },
-        vm::handler::extention_t::sign_extend ,
-            [](uint64_t rax) { printf("0x%llx", rax); },
+        vm::handler::extention_t::sign_extend,
     };
 
     vm::handler::profile_t lconstbsxq = {
@@ -156,7 +151,6 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
             } } },
         vm::handler::extention_t::sign_extend,
-            [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstdwsxq = {
@@ -182,7 +176,6 @@ namespace vm::handler::profile
                      instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
           } },
         vm::handler::extention_t::sign_extend,
-        [](uint64_t rax) { printf("0x%llx", rax); },
     };
 
     vm::handler::profile_t lconstwsxq = {
@@ -211,8 +204,7 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
             } } },
-        vm::handler::extention_t::sign_extend ,
-            [](uint64_t rax) { printf("0x%llx", rax); },
+        vm::handler::extention_t::sign_extend
     };
 
     vm::handler::profile_t lconstwsxdw = {
@@ -239,8 +231,6 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_EAX;
             } } },
-        vm::handler::extention_t::sign_extend ,
-            [](uint64_t rax) { printf("0x%llx", rax);
-            },
+        vm::handler::extention_t::sign_extend,
     };
     } // namespace vm::handler::profile

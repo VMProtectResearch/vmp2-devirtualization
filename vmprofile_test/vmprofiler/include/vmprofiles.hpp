@@ -165,14 +165,6 @@ namespace vm::handler
         /// </summary>
         extention_t extention;
 
-        //
-        //to output decrypted rax
-        //
-        std::function<void(uint64_t Rax)> rax_info;
-
-        //
-        //
-        //
 
     };
 
