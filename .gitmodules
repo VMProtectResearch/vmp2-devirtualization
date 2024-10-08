@@ -10,3 +10,6 @@
 [submodule "vmprofile_test/vmprofiler/dependencies/zydis"]
 	path = vmprofile_test/vmprofiler/dependencies/zydis
 	url = https://github.com/zyantific/zydis
+[submodule "samples"]
+	path = samples
+	url = https://github.com/VMProtectResearch/samples.git

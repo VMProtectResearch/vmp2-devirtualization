@@ -1,4 +1,5 @@
 #include <vmprofiler.hpp>
+#include <format>
 
 namespace vm::util {
 namespace reg {
@@ -77,7 +78,6 @@ void print(zydis_routine_t& routine) {
     LOG(DEBUG) << std::format("> {:#x} {} {}", addr, vectorToHexString(raw),
                               buffer);
   }
-  LOG(DEBUG) << "\n\n";
 }
 
 void print(const zydis_decoded_instr_t& instr, char (&buf)[256]) {
@@ -117,8 +117,10 @@ bool flatten(zydis_routine_t& routine,
       &instr))) {
     if (++instr_cnt > max_instrs)
       return false;
-   
-    vm::util::print(instr);
+  
+    if (routine_addr == 0x14000811E) {
+      assert(0);
+    }
 
     // detect if we have already been at this instruction... if so that means
     // there is a loop and we are going to just return...

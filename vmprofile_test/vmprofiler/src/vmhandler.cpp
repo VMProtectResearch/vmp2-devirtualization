@@ -6,8 +6,13 @@ namespace vm::handler
     {
         if ( !vm::util::flatten( vm_handler, handler_addr ) )
             return false;
+        LOG(DEBUG) << "handler at " << std::hex << handler_addr;
+        vm::util::print(vm_handler);
 
+        LOG(DEBUG) << "after deobfuscate";
         vm::util::deobfuscate( vm_handler );
+        vm::util::print(vm_handler);
+
 
         // find LEA RAX, [RDI+0xE0], else determine if the instruction is inside of calc_jmp...
         auto result = std::find_if( vm_handler.begin(), vm_handler.end(), []( const zydis_instr_t &instr ) -> bool {
@@ -61,8 +66,6 @@ namespace vm::handler
             
             if ( !vm::handler::get( vm_handler_instrs, ( decrypt_val - image_base ) + module_base ) )
                 return false;
-            LOG(DEBUG) << "print handle " << idx;
-            vm::util::print(vm_handler_instrs);
 
             const auto has_imm = vm::handler::has_imm( vm_handler_instrs );
             const auto imm_size = vm::handler::imm_size( vm_handler_instrs );
@@ -269,7 +272,7 @@ namespace vm::handler
 
             *transform_instr = handler_transform->instr;
             
-            LOG(INFO) << "Find transform_instr";
+            LOG(INFO) << "Find handler transform_instr";  // handler的地址是加密的,由一条指令解密出来
             vm::util::print(reinterpret_cast<zydis_decoded_instr_t&>(*transform_instr));
 
             return true;
