@@ -91,10 +91,12 @@ $start:
     auto get_opcode_instr = vmctx.calc_jmp[0];
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream + get_opcode_instr.instr.operands[1].mem.disp.value;
 
-    // rolling key
+    // rolling key 初始化
+    // mov     rbx, rsi
     vm::util::Reg rbx(vmctx.opcode_stream - module_base + image_base);
 
-    // 一开始的值是未知的,假设是0
+    // 进Handler前rax被设值为opcode,movzx会把高位置0
+    // movzx   rax, al
     vm::util::Reg rax(0);
     for (;;)
     {
