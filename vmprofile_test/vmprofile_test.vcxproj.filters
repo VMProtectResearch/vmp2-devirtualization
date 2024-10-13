@@ -22,9 +22,12 @@
     <Filter Include="vmprofille\include">
       <UniqueIdentifier>{d4906d6e-14a7-4954-999d-bba3b9b18705}</UniqueIdentifier>
     </Filter>
+    <Filter Include="lifters">
+      <UniqueIdentifier>{59c940fb-b542-4702-ac1c-db737b03e548}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="vmprofile_test.cpp">
+    <ClCompile Include="devirt.cpp">
       <Filter>源文件</Filter>
     </ClCompile>
     <ClCompile Include="vmprofiler\src\vmprofiles\lflags.cpp">
@@ -175,6 +178,12 @@
     </ClInclude>
     <ClInclude Include="..\ScopeExit.h">
       <Filter>源文件</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lifters\vtil\vtil.hpp">
+      <Filter>lifters</Filter>
+    </ClInclude>
+    <ClInclude Include="..\lifters\llvm\llvm.hpp">
+      <Filter>lifters</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

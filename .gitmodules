@@ -13,3 +13,6 @@
 [submodule "samples"]
 	path = samples
 	url = https://github.com/VMProtectResearch/samples.git
+[submodule "VTIL-Core"]
+	path = VTIL-Core
+	url = https://github.com/vtil-project/VTIL-Core.git

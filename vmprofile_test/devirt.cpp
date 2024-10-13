@@ -3,14 +3,17 @@
 //
 
 #include <iostream>
+#define NOMINMAX
 #include <windows.h>
 
 #include <vmprofiler.hpp>
 #include <xtils.hpp>
 #include <cli-parser.hpp>
 #include <linuxpe>
+#include "../lifters/vtil/vtil.hpp"
 
 INITIALIZE_EASYLOGGINGPP
+
 
 using namespace std;
 
@@ -87,6 +90,8 @@ int main(int argc,const char* argv[])
         return -1;
     }
 
+    
+
 $start:
     auto get_opcode_instr = vmctx.calc_jmp[0];
     uint8_t* vip = (uint8_t*)vmctx.opcode_stream + get_opcode_instr.instr.operands[1].mem.disp.value;
@@ -97,50 +102,69 @@ $start:
 
     // 进Handler前rax被设值为opcode,movzx会把高位置0
     // movzx   rax, al
-    vm::util::Reg rax(0);
+    vm::util::Reg rax(0xdeadc0de);
+    
+    // 创建VM Block
+    auto* block = new vmp2::v3::code_block_t;
+    block->vip_begin = (uintptr_t)vip;
+
+    // 创建VTIL Block
+    auto vtil_block = vtil::basic_block::begin(block->vip_begin);
+    
+    
     for (;;)
     {
-
-//calc_jmp
-
+       
         uint8_t op = *vip;
-        rax.w_8(op);
+        rax.w_64(0);
 
-
-        for (auto& insn : vmctx.update_opcode) {
+        // 在mov     al, [rsi]和movzx   rax, al之间会对al本身做一些解密
+        for (auto& insn : vmctx.update_opcode) {  // 
             if(!vm::transform::has_imm(&insn.instr)) //sub al,bl
                 op = vm::transform::apply(8, insn.instr.mnemonic, op, rbx.r_8());
             else
                 op = vm::transform::apply(8, insn.instr.mnemonic, op, insn.instr.operands[1].imm.value.u);
-        }
+        } // 此时解密完后的op就是进入handler时候的al
 
+        // op解密完后,用解密完后的op解密bl
+        // 最经典的就是sub     bl, al
         for (auto& insn : vmctx.update_rolling_key) {
             auto r = static_cast<uint64_t>(vm::transform::apply(8, insn.instr.mnemonic, rbx.r_8(), op));
-            rbx.w_8(static_cast<uint8_t>(r));   //sub     bl, al
+            rbx.w_8(static_cast<uint8_t>(r));  
         }
 
+        rax.w_8(op); // 解密后的opcode
 
         //get opcode correspond handler  ptr = handler address
         auto ptr = vmctx.vm_handlers.at(op);
-//cacl_jmp
 
+        // forward vip
+        if (vmctx.exec_type == vmp2::exec_type_t::forward)
+            vip = vip + 1;
+        else  //backward vip
+            vip = vip - 1;
 
 
         vm::transform::map_t trans{};
         vm::handler::get_operand_transforms(ptr.instrs, trans);
+        LOG(DEBUG) << "handler " << std::hex << ptr.address << "\ttransform :";
+        for (auto [k, v] : trans) {
+            vm::util::print(v);
+        }
+        LOG(DEBUG) << "end";
         for (auto it = trans.begin(); it != trans.end(); it++) //erase the instrution that is invaild
         {
             if (it->second.mnemonic == ZYDIS_MNEMONIC_INVALID)
                 it = trans.erase(it);
         }
-
+        LOG(DEBUG) << "rax " << std::hex << rax.r_64() << " \trbx " << rbx.r_64();
         //apply the handle's transform to al(ax\eax\rax) and bl(bx\ebx\rbx)
         switch (ptr.imm_size)
         {
         case 8:
         {
             uint8_t al; //temp var
-            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &al);
+            vm::util::get_operand(vip, ptr.imm_size, &al);
 
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AL)
@@ -155,10 +179,6 @@ $start:
                     auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_8(), al);
                     rbx.w_8(static_cast<uint8_t>(r));
                 }
-                else
-                {
-                    DebugBreak();
-                }
             }
 
 
@@ -168,7 +188,7 @@ $start:
         case 16:
         {
             uint16_t ax; //temp var
-            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &ax);
+            vm::util::get_operand(vip , ptr.imm_size, &ax);
 
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_AX)
@@ -187,8 +207,6 @@ $start:
                 {
                     ax = vm::transform::apply(16, insn.second.mnemonic, ax, 0); //
                 }
-                else
-                    DebugBreak();
             }
             rax.w_16(ax);
         }
@@ -196,7 +214,7 @@ $start:
         case 32:
         {
             uint32_t eax; //temp var
-            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &eax);
+            vm::util::get_operand(vip, ptr.imm_size, &eax);
 
             //print handler's transform
             //for (const auto& insn : trans)
@@ -215,10 +233,6 @@ $start:
                     auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_32(), eax);
                     rbx.w_32(static_cast<uint32_t>(r));
                 }
-                else
-                {
-                    DebugBreak();
-                }
             }
         
             rax.w_64(eax);
@@ -227,7 +241,7 @@ $start:
         case 64:
         {
             uint64_t t_rax; //temp var
-            vm::util::get_operand((uint8_t*)(vip + ((vmctx.exec_type == vmp2::exec_type_t::forward ? 1 : -1) * ptr.imm_size / 8)), ptr.imm_size, &rax);
+            vm::util::get_operand(vip, ptr.imm_size, &t_rax);
 
             for (const auto& insn : trans) {
                 if (insn.second.operands[0].reg.value == ZYDIS_REGISTER_RAX)
@@ -242,10 +256,6 @@ $start:
                     auto r = vm::transform::apply(ptr.imm_size, insn.second.mnemonic, rbx.r_64(), t_rax);
                     rbx.w_64(static_cast<uint64_t>(r));
                 }
-                else
-                {
-                    DebugBreak();
-                }
             }
 
             rax.w_64(t_rax);
@@ -254,8 +264,29 @@ $start:
         default:break;
         }//switch end
         
-        assert(ptr.profile && "profile cant be null , need implement");
-        LOG(DEBUG) << "current vip " << std::hex << (void*)vip << " " << "opcode " << (int)op << " handler " << ptr.address << " imm_size " << (int)ptr.imm_size << " " << ptr.profile->name << " " << rax.r_64();
+        // 检查VM Handler是否正确
+        if (!ptr.profile /*|| !(ptr.profile->imm_size != ptr.imm_size)*/) {
+            LOG(ERROR) << "The profile used cannot be empty , need implement " << std::hex << ptr.address;
+            exit(0);
+        }
+
+        LOG(INFO) << "current vip " << std::hex << (void*)vip << " " << "opcode " << (int)op << " handler " << ptr.address << " " << ptr.profile->name << " " << rax.r_64();
+        vm::instrs::virt_instr_t virt_instr{ .mnemonic_t = ptr.profile->mnemonic,.operand = {.imm = {.imm_size = ptr.imm_size,.u = rax.r_64()}}, };
+        
+        bool find = false;
+        for (auto &lifter : lifters::lifter_vtil::LiftersArray) {
+            if (lifter.mnemonic == ptr.profile->mnemonic) {
+                lifter.func(vtil_block, &virt_instr, block);
+                find = true;
+            }
+        }
+
+        if (!find) {
+            vtil::debug::dump(vtil_block);
+            exit(0);
+        }
+        
+
         
 
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
@@ -286,11 +317,11 @@ $start:
             goto $start;   //reparse
         }
         else { 
-                  // forward vip
+            // forward vip
             if (vmctx.exec_type == vmp2::exec_type_t::forward)
-                vip = vip + 1 + ptr.imm_size / 8;
+                vip = vip + ptr.imm_size / 8;
             else  //backward vip
-                vip = vip - 1 - ptr.imm_size / 8;
+                vip = vip - ptr.imm_size / 8;
         }
     }
     return 0;

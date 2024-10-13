@@ -46,6 +46,14 @@ bool ctx_t::init(bool first) {
     if (!vm::calc_jmp::get_op_decrypt(calc_jmp, update_opcode,update_rolling_key))
     return false;
 
+    LOG(DEBUG) << "update_opcode : ";
+    vm::util::print(update_opcode);
+    LOG(DEBUG) << "end";
+
+        LOG(DEBUG) << "update_rolling_key : ";
+    vm::util::print(update_rolling_key);
+    LOG(DEBUG) << "end";
+
   if (!vm::virtual_machine_stream::get(vm_entry, opcode_stream,key1,key2,module_base))
     return false;
 
