@@ -50,7 +50,7 @@ int main(int argc,const char* argv[])
         return -1;
     }
     
-    InitEasyloggingPP("vmp2.log");
+    InitEasyloggingPP("debug.log");
 
     const auto module_base = reinterpret_cast<std::uintptr_t>(
         LoadLibraryExA(parser.get<std::string>("bin").c_str(),
@@ -103,15 +103,67 @@ $start:
     // 进Handler前rax被设值为opcode,movzx会把高位置0
     // movzx   rax, al
     vm::util::Reg rax(0xdeadc0de);
-    
-    // 创建VM Block
-    auto* block = new vmp2::v3::code_block_t;
-    block->vip_begin = (uintptr_t)vip;
 
     // 创建VTIL Block
-    auto vtil_block = vtil::basic_block::begin(block->vip_begin);
-    
-    
+    auto vtil_block = vtil::basic_block::begin((uint8_t)vip);
+    auto translateZydis2Capstone = [](ZydisRegister_ ZydisReg)->x86_reg {
+        switch (ZydisReg)
+        {
+        case ZYDIS_REGISTER_RAX:
+            return X86_REG_RAX;
+        case ZYDIS_REGISTER_RCX:
+            return X86_REG_RCX;
+        case ZYDIS_REGISTER_RDX:
+            return X86_REG_RDX;
+        case ZYDIS_REGISTER_RBX:
+            return X86_REG_RBX;
+        case ZYDIS_REGISTER_RSP:
+            return X86_REG_RSP;
+        case ZYDIS_REGISTER_RBP:
+            return X86_REG_RBP;
+        case ZYDIS_REGISTER_RSI:
+            return X86_REG_RSI;
+        case ZYDIS_REGISTER_RDI:
+            return X86_REG_RDI;
+        case ZYDIS_REGISTER_R8:
+            return X86_REG_R8;
+        case ZYDIS_REGISTER_R9:
+            return X86_REG_R9;
+        case ZYDIS_REGISTER_R10:
+            return X86_REG_R10;
+        case ZYDIS_REGISTER_R11:
+            return X86_REG_R11;
+        case ZYDIS_REGISTER_R12:
+            return X86_REG_R12;
+        case ZYDIS_REGISTER_R13:
+            return X86_REG_R13;
+        case ZYDIS_REGISTER_R14:
+            return X86_REG_R14;
+        case ZYDIS_REGISTER_R15:
+            return X86_REG_R15;
+        default:
+            unreachable();
+        }
+        };
+    // 处理vm_entry中的push指令(预先构建的虚拟栈)
+    for (auto insn : vmctx.vm_entry) {
+        if (insn.instr.mnemonic == ZYDIS_MNEMONIC_PUSH) {
+            if (insn.instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER) {
+                vtil_block->push(translateZydis2Capstone(insn.instr.operands[0].reg.value));
+            }
+            else if (insn.instr.operands[0].type == ZYDIS_OPERAND_TYPE_IMMEDIATE) {
+                vtil_block->push(insn.instr.operands[0].imm.value.u);
+            }
+            else if (insn.instr.operands[0].type == ZYDIS_OPERAND_TYPE_MEMORY && insn.instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                insn.instr.operands[2].type == ZYDIS_OPERAND_TYPE_MEMORY) {
+                vtil_block->push(0);
+            }
+        }
+        else if (insn.instr.mnemonic == ZYDIS_MNEMONIC_PUSHFQ) {
+            vtil_block->pushf();
+        }
+    }
+
     for (;;)
     {
        
@@ -276,14 +328,16 @@ $start:
         bool find = false;
         for (auto &lifter : lifters::lifter_vtil::LiftersArray) {
             if (lifter.mnemonic == ptr.profile->mnemonic) {
-                lifter.func(vtil_block, &virt_instr, block);
+                lifter.func(vtil_block, &virt_instr, nullptr);
                 find = true;
             }
         }
 
         if (!find) {
+            LOG(ERROR) << "lifter " << std::dec << ptr.profile->mnemonic << " not implement , dump and exit";
+            //vtil::optimizer::apply_all(vtil_block);
             vtil::debug::dump(vtil_block);
-            exit(0);
+            return 0;
         }
         
 
