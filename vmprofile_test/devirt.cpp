@@ -316,8 +316,8 @@ $start:
         default:break;
         }//switch end
         
-        // 检查VM Handler是否正确
-        if (!ptr.profile /*|| !(ptr.profile->imm_size != ptr.imm_size)*/) {
+        // 检查VM Handler是否实现
+        if (!ptr.profile) {
             LOG(ERROR) << "The profile used cannot be empty , need implement " << std::hex << ptr.address;
             exit(0);
         }
@@ -335,14 +335,11 @@ $start:
 
         if (!find) {
             LOG(ERROR) << "lifter " << std::dec << ptr.profile->mnemonic << " not implement , dump and exit";
-            //vtil::optimizer::apply_all(vtil_block);
+            vtil::optimizer::apply_all(vtil_block);
             vtil::debug::dump(vtil_block);
             return 0;
         }
         
-
-        
-
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
         {
             //we need new rsi
