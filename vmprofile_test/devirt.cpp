@@ -152,11 +152,11 @@ $start:
                 vtil_block->push(translateZydis2Capstone(insn.instr.operands[0].reg.value));
             }
             else if (insn.instr.operands[0].type == ZYDIS_OPERAND_TYPE_IMMEDIATE) {
-                vtil_block->push(insn.instr.operands[0].imm.value.u);
+                vtil_block->push(vtil::make_imm(insn.instr.operands[0].imm.value.u));
             }
             else if (insn.instr.operands[0].type == ZYDIS_OPERAND_TYPE_MEMORY && insn.instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                 insn.instr.operands[2].type == ZYDIS_OPERAND_TYPE_MEMORY) {
-                vtil_block->push(0);
+                vtil_block->push(0ull);
             }
         }
         else if (insn.instr.mnemonic == ZYDIS_MNEMONIC_PUSHFQ) {
@@ -332,25 +332,20 @@ $start:
                 find = true;
             }
         }
+        
+        // LREGQ X1
+        // LREGQ X2
+        // JMP 
+        // 最终的虚拟指令地址应该是 100000000+X1+X2
+        if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) // Change RSI Register
+        {
+        }
 
         if (!find) {
             LOG(ERROR) << "lifter " << std::dec << ptr.profile->mnemonic << " not implement , dump and exit";
-            vtil::optimizer::apply_all(vtil_block);
+            //vtil::optimizer::apply_all(vtil_block);
             vtil::debug::dump(vtil_block);
             return 0;
-        }
-        
-        if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) //vJcc(Change RSI Register)
-        {
-            //we need new rsi
-            printf(">> find vJcc,need new rsi : ");
-            uint64_t rsi;
-            cin >>  hex >> rsi;
-            vip = (uint8_t*)rsi;
-            rbx = (uint64_t)vip + 1;         //mov     rbx, rsi   change rolling key again
-
-            if (!vip || cin.fail())
-                return 0;
         }
         else if (ptr.profile && ptr.profile->mnemonic == vm::handler::VMEXIT)
         {
