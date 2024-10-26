@@ -1,5 +1,7 @@
 #include <vmprofiler.hpp>
 
+// 将栈上的值赋值给虚拟寄存器
+
 namespace vm::handler::profile
 {
 vm::handler::profile_t sregq = {

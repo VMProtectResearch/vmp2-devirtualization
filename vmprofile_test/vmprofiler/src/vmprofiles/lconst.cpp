@@ -9,7 +9,16 @@ namespace vm::handler::profile
         "LCONSTQ",
         LCONSTQ,
         64,
-        { { // SUB RBP, 8
+    {{// MOV RAX, [RSI]
+      [](const zydis_decoded_instr_t& instr)
+          -> bool {
+          return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+               instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                 instr.operands[0].reg.value == ZYDIS_REGISTER_RAX &&
+               instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+               instr.operands[1].mem.base == ZYDIS_REGISTER_RSI;
+      }   ,      
+                // SUB RBP, 8
             []( const zydis_decoded_instr_t &instr ) -> bool {
                 return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
                        instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
@@ -23,7 +32,8 @@ namespace vm::handler::profile
                        instr.operands[ 0 ].mem.base == ZYDIS_REGISTER_RBP &&
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_RAX;
-      }}},
+        },
+            }},
     vm::handler::extention_t::none
     };
 

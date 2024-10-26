@@ -1,5 +1,7 @@
 #include <vmprofiler.hpp>
 
+// 将虚拟寄存器加载到栈上
+
 namespace vm::handler::profile
 {
     vm::handler::profile_t lregq = { //sp = sp-8

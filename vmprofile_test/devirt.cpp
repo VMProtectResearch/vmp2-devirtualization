@@ -188,6 +188,7 @@ $start:
         rax.w_8(op); // 解密后的opcode
 
         //get opcode correspond handler  ptr = handler address
+        
         auto ptr = vmctx.vm_handlers.at(op);
 
         // forward vip
@@ -317,8 +318,9 @@ $start:
         }//switch end
         
         // 检查VM Handler是否实现
+        
         if (!ptr.profile) {
-            LOG(ERROR) << "The profile used cannot be empty , need implement " << std::hex << ptr.address;
+            LOG(ERROR) << "error : vm handler cannot be recognized " << std::hex << ptr.address;
             exit(0);
         }
 
@@ -333,10 +335,6 @@ $start:
             }
         }
         
-        // LREGQ X1
-        // LREGQ X2
-        // JMP 
-        // 最终的虚拟指令地址应该是 100000000+X1+X2
         if (ptr.profile && ptr.profile->mnemonic == vm::handler::JMP) // Change RSI Register
         {
         }
