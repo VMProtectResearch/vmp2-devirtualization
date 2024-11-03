@@ -182,8 +182,5 @@
     <ClInclude Include="..\lifters\vtil\vtil.hpp">
       <Filter>lifters</Filter>
     </ClInclude>
-    <ClInclude Include="..\lifters\llvm\llvm.hpp">
-      <Filter>lifters</Filter>
-    </ClInclude>
   </ItemGroup>
 </Project>

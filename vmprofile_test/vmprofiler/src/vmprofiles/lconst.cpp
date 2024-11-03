@@ -10,14 +10,14 @@ namespace vm::handler::profile
         LCONSTQ,
         64,
     {{// MOV RAX, [RSI]
-      [](const zydis_decoded_instr_t& instr)
-          -> bool {
+        [](const zydis_decoded_instr_t& instr)  // MOV RAX, [RSI]
+        -> bool {
           return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
-               instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                 instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                  instr.operands[0].reg.value == ZYDIS_REGISTER_RAX &&
-               instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
-               instr.operands[1].mem.base == ZYDIS_REGISTER_RSI;
-      }   ,      
+                 instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                 instr.operands[1].size == 64;
+        },  
                 // SUB RBP, 8
             []( const zydis_decoded_instr_t &instr ) -> bool {
                 return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
@@ -43,7 +43,15 @@ namespace vm::handler::profile
         "LCONSTDW",
         LCONSTDW,
         32,
-        { { // SUB RBP, 4
+            {{[](const zydis_decoded_instr_t& instr)  // MOV EAX, [RSI]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_EAX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                       instr.operands[1].size == 32;
+              },
+                // SUB RBP, 4
             []( const zydis_decoded_instr_t &instr ) -> bool {
                 return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
                        instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
@@ -66,7 +74,18 @@ namespace vm::handler::profile
         "LCONSTW",
         LCONSTW,
         16,
-        { { // SUB RBP, 2
+        { { 
+             [](const zydis_decoded_instr_t& instr)  // MOV AX, [RSI]
+                  -> bool {
+                   return (instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                          instr.operands[0].type ==
+                              ZYDIS_OPERAND_TYPE_REGISTER &&
+                          instr.operands[0].reg.value == ZYDIS_REGISTER_AX &&
+                          instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                          instr.operands[1].mem.base == ZYDIS_REGISTER_RSI &&
+                          instr.operands[1].size == 16);
+              },
+                // SUB RBP, 2
             []( const zydis_decoded_instr_t &instr ) -> bool {
                 return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
                        instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
@@ -81,7 +100,7 @@ namespace vm::handler::profile
                        instr.operands[ 1 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                        instr.operands[ 1 ].reg.value == ZYDIS_REGISTER_AX;
             } } } ,
-            vm::handler::extention_t::none,
+            vm::handler::extention_t::none
     };
 
     vm::handler::profile_t lconstbzxw = {
@@ -91,7 +110,15 @@ namespace vm::handler::profile
         "LCONSTBZXW",
         LCONSTBZXW,
         8,
-        { { // SUB RBP, 2
+        { {[](const zydis_decoded_instr_t& instr)  // movzx   eax, byte ptr [rsi]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOVZX &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_EAX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                       instr.operands[1].size == 8;
+              },
+                // SUB RBP, 2
             []( const zydis_decoded_instr_t &instr ) -> bool {
                 return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
                        instr.operands[ 0 ].type == ZYDIS_OPERAND_TYPE_REGISTER &&
@@ -109,14 +136,57 @@ namespace vm::handler::profile
             vm::handler::extention_t::none,
     };
 
+    vm::handler::profile_t lconstb2w = {
+        // MOV AL, [RSI]
+        // SUB RBP, 2
+        // MOV [RBP], AX
+        "LCONSTB2W",
+        LCONSTB2W,
+        8,
+        {{[](const zydis_decoded_instr_t& instr)  // mov     al, [rsi]
+          -> bool {
+            return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                   instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                   instr.operands[0].reg.value == ZYDIS_REGISTER_AL &&
+                   instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                   instr.operands[1].size == 8;
+          },
+          // SUB RBP, 2
+          [](const zydis_decoded_instr_t& instr) -> bool {
+            return instr.mnemonic == ZYDIS_MNEMONIC_SUB &&
+                   instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                   instr.operands[0].reg.value == ZYDIS_REGISTER_RBP &&
+                   instr.operands[1].type == ZYDIS_OPERAND_TYPE_IMMEDIATE &&
+                   instr.operands[1].imm.value.u == 0x2;
+          },
+          // MOV [RBP], AX
+          [](const zydis_decoded_instr_t& instr) -> bool {
+            return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                   instr.operands[0].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                   instr.operands[0].mem.base == ZYDIS_REGISTER_RBP &&
+                   instr.operands[1].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                   instr.operands[1].reg.value == ZYDIS_REGISTER_AX;
+          }}},
+        vm::handler::extention_t::none,
+    };
+
     vm::handler::profile_t lconstbsxdw = {
         // CWDE
         // SUB RBP, 4
         // MOV [RBP], EAX
         "LCONSTBSXDW",
         LCONSTBSXDW,
-        8,
-        { { // CWDE
+        16,
+        { { 
+                [](const zydis_decoded_instr_t& instr)  // MOV AX, [RSI]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_AX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                       instr.operands[1].size == 16;
+              },
+                // CWDE
             []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CWDE; },
             // SUB RBP, 4
             []( const zydis_decoded_instr_t &instr ) -> bool {
@@ -142,8 +212,17 @@ namespace vm::handler::profile
         // MOV [RBP], RAX
         "LCONSTBSXQ",
         LCONSTBSXQ,
-        8,
-        { { // CDQE
+        32,
+        { { 
+          [](const zydis_decoded_instr_t& instr) // mov     eax, [rsi]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER&&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_EAX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY&&
+                       instr.operands[1].size == 32;
+          },
+            // CDQE
             []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CDQE; },
             // SUB RBP, 0x8
             []( const zydis_decoded_instr_t &instr ) -> bool {
@@ -170,7 +249,16 @@ namespace vm::handler::profile
         "LCONSTDWSXQ",
         LCONSTDWSXQ,
         32,
-        { // CDQE
+        { 
+          [](const zydis_decoded_instr_t& instr)  // mov     eax, [rsi]
+         -> bool {
+           return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                  instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                  instr.operands[0].reg.value == ZYDIS_REGISTER_EAX &&
+                  instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                  instr.operands[1].size == 32;
+         },
+            // CDQE
           []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CDQE; },
           // SUB RBP, 8
           []( const zydis_decoded_instr_t &instr ) -> bool {
@@ -189,13 +277,23 @@ namespace vm::handler::profile
     };
 
     vm::handler::profile_t lconstwsxq = {
+        // CWDE
         // CDQE
         // SUB RBP, 8
         // MOV [RBP], RAX
         "LCONSTWSXQ",
         LCONSTWSXQ,
-        16,
-        { { // CWDE
+        8,
+        { { 
+            [](const zydis_decoded_instr_t& instr)  // movzx   eax, byte ptr [rsi]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOVZX &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_EAX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                       instr.operands[1].size == 8;
+              },    
+            // CWDE
             []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CWDE; },
             // CDQE
             []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CDQE; },
@@ -224,7 +322,15 @@ namespace vm::handler::profile
         "LCONSTWSXDW",
         LCONSTWSXDW,
         16,
-        { { // CWDE
+            {{[](const zydis_decoded_instr_t& instr)  // MOV AX, [RSI]
+              -> bool {
+                return instr.mnemonic == ZYDIS_MNEMONIC_MOV &&
+                       instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
+                       instr.operands[0].reg.value == ZYDIS_REGISTER_AX &&
+                       instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
+                       instr.operands[1].size == 16;
+              },
+                // CWDE
             []( const zydis_decoded_instr_t &instr ) -> bool { return instr.mnemonic == ZYDIS_MNEMONIC_CWDE; },
             // SUB RBP, 4
             []( const zydis_decoded_instr_t &instr ) -> bool {

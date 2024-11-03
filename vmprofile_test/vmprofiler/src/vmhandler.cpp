@@ -80,15 +80,13 @@ namespace vm::handler
             vm_handler.instrs = vm_handler_instrs;
             vm_handler.imm_size = imm_size.has_value() ? imm_size.value() : 0u;
             vm_handler.transforms = transforms;
-            vm_handler.profile = vm::handler::get_profile( vm_handler );
+            vm_handler.profile = vm::handler::get_profile( vm_handler );  // 这个地方不判空,真正用到了再判断
+            if (vm_handler.profile &&
+                vm_handler.profile->imm_size != vm_handler.imm_size) { 
+              // 基本上VM Handler识别错了
+              return false;
+            }
             vm_handlers.push_back( vm_handler );
-
-            LOG(INFO) << "decrypt handle index "
-                      << "[" << std::dec << idx << "] " << std::hex
-                      << decrypt_val << " "
-                      << (vm_handler.profile ? vm_handler.profile->name
-                                             : "no_profile")
-                      << " " << (has_imm ? "has_imm" : "");
         }
 
         return true;
@@ -168,6 +166,13 @@ namespace vm::handler
             transforms[ static_cast< vm::transform::type >( idx ) ] = transform_instr->instr;
         }
 
+        // 删除不合法的指令
+        for (auto it = transforms.begin(); it != transforms.end();
+             it++)  // erase the instrution that is invaild
+        {
+          if (it->second.mnemonic == ZYDIS_MNEMONIC_INVALID)
+            it = transforms.erase(it);
+        }
         return true;
     }
 
@@ -176,7 +181,6 @@ namespace vm::handler
         static const auto vcontains = []( vm::handler::profile_t *vprofile, handler_t *vm_handler ) -> bool {
 
             zydis_routine_t::iterator contains = vm_handler->instrs.begin();
-
             for ( auto &instr : vprofile->signature )
             {
                 contains =

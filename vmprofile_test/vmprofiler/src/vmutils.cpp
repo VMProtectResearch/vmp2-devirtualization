@@ -106,13 +106,14 @@ bool flatten(zydis_routine_t& routine,
   zydis_decoded_instr_t instr;
   std::uint32_t instr_cnt = 0u;
 
-  auto RAII = llvm::make_scope_exit([&]() { auto it = routine.begin();
-    for (; it != routine.end(); it++) {
+  auto _ = llvm::make_scope_exit([&]() { auto it = routine.begin();
+    for (; it != routine.end();) {
       if (it->instr.mnemonic == ZydisMnemonic::ZYDIS_MNEMONIC_INVALID) {
         it = routine.erase(it);
+      } else {
+        it++;
       }
     }
-      
       });
 
   while ((ZydisDecoderDecodeBuffer(

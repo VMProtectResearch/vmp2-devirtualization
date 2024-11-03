@@ -178,14 +178,17 @@ std::vector<vm_enter_t> get_vm_entries(std::uintptr_t module_base,
                      }) != entries.end())
       continue;
 
+    // lea     r12, byte_140007F21
     auto hndlr_tbl = std::find_if(
         rtn.begin(), rtn.end(), [&](const zydis_instr_t& instr) -> bool {
           return instr.instr.mnemonic == ZYDIS_MNEMONIC_LEA &&
                  instr.instr.operands[0].type == ZYDIS_OPERAND_TYPE_REGISTER &&
                  instr.instr.operands[0].reg.value == ZYDIS_REGISTER_R12 &&
-                 instr.instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY &&
-                 instr.instr.operands[1].mem.base == ZYDIS_REGISTER_NONE;
+                 instr.instr.operands[1].type == ZYDIS_OPERAND_TYPE_MEMORY;
         });
+
+    if (hndlr_tbl == rtn.end())
+      assert(0 && "cant find handler table");
 
     vm_enter_t entry{(std::uint32_t)(result - module_base), push_val};
     entry.hndlr_tble.lea_r12_instr.addr = hndlr_tbl->addr;
